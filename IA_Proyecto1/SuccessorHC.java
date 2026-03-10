@@ -15,28 +15,46 @@ import java.util.List;
 public class SuccessorHC implements SuccessorFunction {
 
     public List getSuccessors(Object state) {
-
-        /**Es crea un array de tots els successors per a guardar. */
         ArrayList<Successor> successors = new ArrayList<>();
-        /*Agafem una copa del estat actual. */
         RescueStates s = (RescueStates) state;
         int numHelis = s.getNumHelicopteros();
 
-        /**Per a cada helicopter, s'agafa un del seu grup */
+        // ==========================================
+        // OPERADOR 1: MOVE (Moure de posició/helicòpter)
+        // ==========================================
         for (int h1 = 0; h1 < numHelis; h1++) {
-
-            for (int g1 : s.getGruposHelicoptero(h1)) {
-
-                /** I es mou cap a un altre helicopter  */
+            int size1 = s.getGruposHelicoptero(h1).size();
+            for (int p1 = 0; p1 < size1; p1++) { // Per cada posició d'origen
                 for (int h2 = 0; h2 < numHelis; h2++) {
-
                     if (h1 != h2) {
+                        int size2 = s.getGruposHelicoptero(h2).size();
+                        // Iterem fins a size2 INCLÒS, per poder inserir al final
+                        for (int p2 = 0; p2 <= size2; p2++) {
+                            RescueStates newState = new RescueStates(s);
+                            newState.moveGrupo(h1, p1, h2, p2);
+                            successors.add(new Successor("Move H" + h1 + " to H" + h2, newState));
+                        }
+                    }
+                }
+            }
+        }
 
+        // ==========================================
+        // OPERADOR 2: SWAP (Intercanvi entre rutes)
+        // ==========================================
+        for (int h1 = 0; h1 < numHelis; h1++) {
+            int size1 = s.getGruposHelicoptero(h1).size();
+            for (int p1 = 0; p1 < size1; p1++) {
+                // h2 comença en h1 per permetre intercanvis dins del mateix helicòpter i no repetir combinacions
+                for (int h2 = h1; h2 < numHelis; h2++) { 
+                    // Si és el mateix helicòpter, p2 ha de començar a p1+1 per no fer un swap amb ell mateix
+                    int startP2 = (h1 == h2) ? p1 + 1 : 0;
+                    int size2 = s.getGruposHelicoptero(h2).size();
+                    
+                    for (int p2 = startP2; p2 < size2; p2++) {
                         RescueStates newState = new RescueStates(s);
-
-                        /**Es mou d'un a un altre */
-                        newState.moveGrupo(g1, h1, h2);
-                        successors.add(new Successor("move", newState));
+                        newState.swapGrupos(h1, p1, h2, p2);
+                        successors.add(new Successor("Swap", newState));
                     }
                 }
             }

@@ -17,92 +17,67 @@ public class Heuristic1 implements HeuristicFunction {
      * EL RESCATE DE PRIORIDAD 1, SOLO EL TOTAL
      */
     public double getHeuristicValue(Object state) {
-
-        /* agafem el estat a comprobar */
         RescueStates s = (RescueStates) state;
-
-        /**
-         * Variables utils
-         */
         double maxTiempo = 0;
-        double tiempoPrio1 = 0;
         Grupos grupos = s.getGrupos();
         Centros centros = s.getCentros();
         int numHelis = s.getNumHelicopteros();
+        
+        int CAPACIDAD_MAX = 15; // POSA LA CAPACITAT REAL DE L'ENUNCIAT AQUÍ
 
-        /* Per a cada helicopter calculem el que tarda i ens quedem amb el maxim. */
         for (int h = 0; h < numHelis; h++) {
-
             Centro c = centros.get(h);
             ArrayList<Integer> lista = s.getGruposHelicoptero(h);
+            
             double tiempoHeli = 0;
+            double tiempoViajeActual = 0;
+            int personasEnHeli = 0;
+            Grupo anterior = null;
 
-            /* La formula ve donada per:
-            * Temps = TcentreTogrup1 + Tgrup1ToGrup2 + Tgrup2ToGrup3 + Tgrup3ToBase + 
-            *           Trescat1 + Trescat2 + Trescat3 + 10
-            * 
-            * Si 100 km/h * dist -> km/h * 1 h/60 min
-            *                           => 100/60 km/min 
-             */
-            for (int i = 0; i < lista.size(); i += 3) {
+            // Iterem d'un en un (ja no de 3 en 3)
+            for (int i = 0; i < lista.size(); i++) {
+                Grupo g = grupos.get(lista.get(i));
+                int numPersonas = g.getNPersonas();
 
-                double tiempoRuta = 0;
+                // 1. Comprovem si recollir aquest grup excedeix la capacitat
+                if (personasEnHeli + numPersonas > CAPACIDAD_MAX) {
+                    // TORNEM A LA BASE per finalitzar el viatge actual
+                    tiempoViajeActual += distanciaCentroGrupo(c, anterior) * (60.0 / 100.0);
+                    tiempoViajeActual += 10; // Temps de descans
+                    tiempoHeli += tiempoViajeActual; // Acumulem el temps del viatge
+                    
+                    // Reiniciem l'helicòpter
+                    tiempoViajeActual = 0;
+                    personasEnHeli = 0;
+                    anterior = null;
+                }
 
-                Grupo g1 = grupos.get(lista.get(i));
+                // 2. Anem a buscar el grup (des de la base o des de l'últim grup)
+                if (anterior == null) {
+                    tiempoViajeActual += distanciaCentroGrupo(c, g) * (60.0 / 100.0);
+                } else {
+                    tiempoViajeActual += distanciaGrupoGrupo(anterior, g) * (60.0 / 100.0);
+                }
 
-                /**
-                 * Temps del centre aal primer grup
-                 */
-                tiempoRuta += distanciaCentroGrupo(c, g1) * (100 / 60);
-
-                /**
-                 * Calcular el temps de recollida
-                 */
-                int prio = g1.getPrioridad();
-                int numPersones = g1.getNPersonas();
+                // 3. Temps de rescat
+                int prio = g.getPrioridad();
                 if (prio == 1) {
-                    tiempoRuta += numPersones * 2; 
-                }else {
-                    tiempoRuta += numPersones;
+                    tiempoViajeActual += numPersonas * 2; 
+                } else {
+                    tiempoViajeActual += numPersonas;
                 }
 
-                /**
-                 * Guardar el grup anterior per a calcular la distancia
-                 */
-                Grupo anterior = g1;
+                // 4. Actualitzem l'estat per a la següent iteració
+                personasEnHeli += numPersonas;
+                anterior = g;
+            }
 
-                for (int j = 1; j < 3 && i + j < lista.size(); j++) {
-
-                    /**
-                     * Agafar el seguent grup de la llista.
-                     */
-                    Grupo g = grupos.get(lista.get(i + j));
-
-                    /**
-                     * Temps del grup anterior al actual
-                     */
-                    tiempoRuta += distanciaGrupoGrupo(anterior, g) * (100 / 60);
-
-                    /**
-                     * Temps de rescat
-                     */
-                    prio = g.getPrioridad();
-                    numPersones = g.getNPersonas();
-                    if (prio == 1) {
-                        tiempoRuta += numPersones * 2; 
-                    }else {
-                        tiempoRuta += numPersones;
-                    }
-
-                    anterior = g;
-                }
-
-                /** Distancia del ultim grup al cnetre */
-                tiempoRuta += distanciaCentroGrupo(c, anterior)*(100/60);
-
-                //** Temps de descans */
-                tiempoRuta += 10;
-                tiempoHeli += tiempoRuta;
+            // Si hem acabat tots els grups de la llista però estàvem a mitges d'un viatge...
+            if (anterior != null) {
+                // Cal tornar a la base definitivament
+                tiempoViajeActual += distanciaCentroGrupo(c, anterior) * (60.0 / 100.0);
+                // Segons l'enunciat potser no cal descansar al final de tot, si en cal, suma-li +10 aquí.
+                tiempoHeli += tiempoViajeActual;
             }
 
             if (tiempoHeli > maxTiempo) {

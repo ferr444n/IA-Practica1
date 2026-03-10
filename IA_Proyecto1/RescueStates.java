@@ -21,7 +21,7 @@ public class RescueStates {
     estructura de dades minima. Despres es pot calcular el temps de fer un viatge etc */
     private ArrayList<ArrayList<Integer>> helicopteros;
 
-    /* +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+ */
+ /* +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+ */
  /*                    Constructores                              */
  /* +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+ */
 
@@ -69,36 +69,24 @@ public class RescueStates {
     public void addGrupo(int helicoptero, int grupo) {
         helicopteros.get(helicoptero).add(grupo);
     }
-
-    /* Moure un grup d'un helicopter a un altre */
- /*
-        H1 = [1,2,3]
-        H5 = []
-        moveGrupo(2,H1,H5)
-        H1 = [1,3]
-        H5 = [2]
-     */
-    public void moveGrupo(int grupo, int heliOrigen, int heliDestino) {
-
-        helicopteros.get(heliOrigen).remove(Integer.valueOf(grupo));
-        helicopteros.get(heliDestino).add(grupo);
+   
+    /* Moure un grup des d'una posició d'un helicòpter a una posició d'un altre */
+    public void moveGrupo(int heliOrigen, int posOrigen, int heliDestino, int posDestino) {
+        // Traiem el grup de la posició origen
+        int grupo = helicopteros.get(heliOrigen).remove(posOrigen);
+        // L'inserim EXACTAMENT a la posició de destí (pot ser al mig de la llista)
+        helicopteros.get(heliDestino).add(posDestino, grupo);
     }
 
-    /* Intercambiar grupos entre dos helicopteros */
- /*
-        H1 = [1,2,3]
-        H5 = [6,100]
-        swapGrupos(2,H1,6,H5)
-        H1 = [1,3,100]
-        H5 = [6,2]
-     */
-    public void swapGrupos(int grupo1, int heli1, int grupo2, int heli2) {
+    /* Intercanviar els grups que estan en dues posicions concretes */
+    public void swapGrupos(int heli1, int pos1, int heli2, int pos2) {
+        // Agafem els IDs dels grups
+        int grupo1 = helicopteros.get(heli1).get(pos1);
+        int grupo2 = helicopteros.get(heli2).get(pos2);
 
-        helicopteros.get(heli1).remove(Integer.valueOf(grupo1));
-        helicopteros.get(heli2).remove(Integer.valueOf(grupo2));
-
-        helicopteros.get(heli1).add(grupo2);
-        helicopteros.get(heli2).add(grupo1);
+        // Els sobreescrivim en les posicions intercanviades
+        helicopteros.get(heli1).set(pos1, grupo2);
+        helicopteros.get(heli2).set(pos2, grupo1);
     }
 
     /* +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+ */

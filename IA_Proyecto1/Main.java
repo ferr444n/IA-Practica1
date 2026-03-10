@@ -31,7 +31,7 @@ public class Main {
         int numCentros = 3;//(((int) System.currentTimeMillis())%10) + 1;
 
         /* Seed random. */
-        int seed = (int) System.currentTimeMillis();
+        int seed = 123456789;
         System.out.println("Seed usada: " + seed);
 
         /* Se usa la cosa de desastres para crear grupos randoms y centros randoms con 
