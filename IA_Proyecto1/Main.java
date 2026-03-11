@@ -24,20 +24,19 @@ public class Main {
 
     public static void main(String[] args) throws Exception {
 
-        /* Nombre de grups es un nombre random entre 1 i 1000 */
-        /* Pero es pot cambiar nomes modificant el nombre del modul  */
+        
         int numGrupos = 100;//(((int) System.currentTimeMillis())%1000) + 1;
-        /* Nombre de centres segons el modul tambe */
-        int numCentros = 3;//(((int) System.currentTimeMillis())%10) + 1;
+        int numCentros = 5;//(((int) System.currentTimeMillis())%10) + 1;
+        int numHelicopteros = 1; // El nombre de helicopteros es igual al de centros, pero se podria cambiar luego
 
         /* Seed random. */
-        int seed = 123456789;
+        int seed = (int) System.currentTimeMillis();
         System.out.println("Seed usada: " + seed);
 
         /* Se usa la cosa de desastres para crear grupos randoms y centros randoms con 
         los parametros que hemos dicho antes */
         Grupos grupos = new Grupos(numGrupos, seed);
-        Centros centros = new Centros(numCentros, 1, seed);
+        Centros centros = new Centros(numCentros, numHelicopteros, seed);
 
         /* Se genera el estado inicial (mirar de optimizar la data structure para luego) */
         RescueStates estadoInicial = Generator1.generate(grupos, centros);
