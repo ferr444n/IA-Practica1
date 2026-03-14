@@ -21,7 +21,7 @@ public class RescueStates {
     estructura de dades minima. Despres es pot calcular el temps de fer un viatge etc */
     private ArrayList<ArrayList<Integer>> helicopteros;
 
- /* +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+ */
+    /* +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+ */
  /*                    Constructores                              */
  /* +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+ */
 
@@ -69,13 +69,19 @@ public class RescueStates {
     public void addGrupo(int helicoptero, int grupo) {
         helicopteros.get(helicoptero).add(grupo);
     }
-   
+
     /* Moure un grup des d'una posició d'un helicòpter a una posició d'un altre */
     public void moveGrupo(int heliOrigen, int posOrigen, int heliDestino, int posDestino) {
-        // Traiem el grup de la posició origen
+
         int grupo = helicopteros.get(heliOrigen).remove(posOrigen);
-        // L'inserim EXACTAMENT a la posició de destí (pot ser al mig de la llista)
-        helicopteros.get(heliDestino).add(posDestino, grupo);
+
+        ArrayList<Integer> destino = helicopteros.get(heliDestino);
+
+        if (posDestino > destino.size()) {
+            posDestino = destino.size();
+        }
+
+        destino.add(posDestino, grupo);
     }
 
     /* Intercanviar els grups que estan en dues posicions concretes */
@@ -87,6 +93,22 @@ public class RescueStates {
         // Els sobreescrivim en les posicions intercanviades
         helicopteros.get(heli1).set(pos1, grupo2);
         helicopteros.get(heli2).set(pos2, grupo1);
+    }
+
+    /**
+     * Es fa swap de dos grups en la cua d'un mateix helicopter
+     *
+     * H1 [1,2,3,4,5]
+     *
+     * SwapMateixHelicopter(h1,2,3)
+     *
+     * H1 [1,3,2,4,5]
+     */
+    public void swapMateixHelicopter(int helic, int grup1, int grup2) {
+        int g1 = helicopteros.get(helic).get(grup1);
+        int g2 = helicopteros.get(helic).get(grup2);
+        helicopteros.get(helic).set(grup1, g2);
+        helicopteros.get(helic).set(grup2, g1);
     }
 
     /* +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+ */
@@ -113,16 +135,16 @@ public class RescueStates {
         return centros;
     }
 
- /* +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+ */
+    /* +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+ */
  /*                      Chivatos para ver el problema y el estado*/
  /* +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+ */
     @Override
     public String toString() {
 
-        /** Construimos un string enorme con toda la info */
-
         StringBuilder s = new StringBuilder();
+
         double tiempoTotal = 0;
+        double tiempoTotalPrio1 = 0;
 
         for (int h = 0; h < helicopteros.size(); h++) {
 
@@ -133,6 +155,7 @@ public class RescueStates {
             s.append("Grupos: ").append(lista).append("\n");
 
             double tiempoHeli = 0;
+            double tiempoHastaUltimoPrio1 = 0;
 
             s.append("Prioridad:\n");
             for (int i = 0; i < lista.size(); i++) {
@@ -141,14 +164,13 @@ public class RescueStates {
             }
             s.append("\n");
 
-            /** Pillamos rutas de tres en tres */
             for (int i = 0; i < lista.size(); i += 3) {
 
                 double tiempoRuta = 0;
 
                 Grupo g1 = grupos.get(lista.get(i));
 
-                /* tiempo del centro 2 primer grupo */
+                /* centro -> primer grupo */
                 tiempoRuta += distanciaCentroGrupo(c, g1) * 60.0 / 100.0;
 
                 int prio = g1.getPrioridad();
@@ -156,9 +178,12 @@ public class RescueStates {
 
                 tiempoRuta += (prio == 1) ? personas * 2 : personas;
 
+                if (prio == 1) {
+                    tiempoHastaUltimoPrio1 = tiempoHeli + tiempoRuta;
+                }
+
                 Grupo anterior = g1;
 
-                /* Tiempo de grupo a grupo siguiente */
                 for (int j = 1; j < 3 && i + j < lista.size(); j++) {
 
                     Grupo g = grupos.get(lista.get(i + j));
@@ -170,26 +195,36 @@ public class RescueStates {
 
                     tiempoRuta += (prio == 1) ? personas * 2 : personas;
 
+                    if (prio == 1) {
+                        tiempoHastaUltimoPrio1 = tiempoHeli + tiempoRuta;
+                    }
+
                     anterior = g;
                 }
 
-                /* Last grupo de nuevo hacia el centro centro */
+                /* último grupo -> centro */
                 tiempoRuta += distanciaCentroGrupo(c, anterior) * 60.0 / 100.0;
 
-                /* descanso entre rescates*/
+                /* descanso */
                 tiempoRuta += 10;
 
                 tiempoHeli += tiempoRuta;
             }
 
-            s.append("Tiempo helicoptero: ").append(tiempoHeli).append("\n\n");
+            s.append("Tiempo helicoptero: ").append(tiempoHeli).append("\n");
+            s.append("Tiempo ultimo rescate prioridad 1: ").append(tiempoHastaUltimoPrio1).append("\n\n");
 
             if (tiempoHeli > tiempoTotal) {
                 tiempoTotal = tiempoHeli;
             }
+
+            if (tiempoHastaUltimoPrio1 > tiempoTotalPrio1) {
+                tiempoTotalPrio1 = tiempoHastaUltimoPrio1;
+            }
         }
 
         s.append("Tiempo total mision: ").append(tiempoTotal).append("\n");
+        s.append("Tiempo total rescate prioridad 1: ").append(tiempoTotalPrio1).append("\n");
 
         return s.toString();
     }

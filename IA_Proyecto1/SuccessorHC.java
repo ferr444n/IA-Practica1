@@ -60,6 +60,24 @@ public class SuccessorHC implements SuccessorFunction {
             }
         }
 
+
+
+        /** NOu operador: swap en el mateix helicopter */
+        /*
+        for(int i = 0; i < numHelis; ++i)
+        {
+            for(int j = 0; j < s.getGruposHelicoptero(i).size(); ++j)
+            {
+                //* Per a cada grup del helicopter, es canvia per un altre 
+                for(int k = 0; k < s.getGruposHelicoptero(i).size(); ++k)
+                {
+                    RescueStates n = new RescueStates(s);
+                    n.swapMateixHelicopter(i, j, k);
+                    successors.add(new Successor("Swap same", n));
+                }
+            }
+        }
+    */
         return successors;
     }
 }

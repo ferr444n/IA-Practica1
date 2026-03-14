@@ -18,19 +18,16 @@ import java.util.Random;
     (es posible que esten intercanviadas y que sea al reves, comprobarlo luego)
 
  */
-
-
 public class Main {
 
     public static void main(String[] args) throws Exception {
 
-        
         int numGrupos = 100;//(((int) System.currentTimeMillis())%1000) + 1;
         int numCentros = 5;//(((int) System.currentTimeMillis())%10) + 1;
         int numHelicopteros = 1; // El nombre de helicopteros es igual al de centros, pero se podria cambiar luego
 
         /* Seed random. */
-        int seed = (int) System.currentTimeMillis();
+        int seed = -321518597; //(int) System.currentTimeMillis();
         System.out.println("Seed usada: " + seed);
 
         /* Se usa la cosa de desastres para crear grupos randoms y centros randoms con 
@@ -39,7 +36,7 @@ public class Main {
         Centros centros = new Centros(numCentros, numHelicopteros, seed);
 
         /* Se genera el estado inicial (mirar de optimizar la data structure para luego) */
-        RescueStates estadoInicial = Generator1.generate(grupos, centros);
+        RescueStates estadoInicial = Generator2.generate(grupos, centros);
 
         /* Es fa un print per a verue l'estat inicial */
         System.out.println(estadoInicial.toString());
@@ -48,13 +45,29 @@ public class Main {
         que no entenc */
         Problem problem = new Problem(
                 estadoInicial,
-                new SuccessorHC(),
+                /** Comentar descomentar depenent de si se quiere hacer
+                 * HC o SA
+                 */
+                //new SuccessorHC(),
+                new SuccessorSA(),
                 new IsGoalTest(),
                 new Heuristic1()
         );
 
         /* Merdes de l'aima */
-        Search search = new HillClimbingSearch();
+        
+        /** Comentar / descomentar els dos searchs per
+         * cambiar de hilclimbing a SA
+         */
+        //Search search = new HillClimbingSearch();
+
+        Search search = new SimulatedAnnealingSearch(
+                100000, /** PASOS totales */
+                100, /** Iteracions per temperatura */
+                10, /** Temperatura inicial */
+                0.005 /** Velocitat de refrigeracio */
+        );
+
         SearchAgent agent = new SearchAgent(problem, search);
 
         /* Resultat de la execucio del hillclibing (posar el simulated annealing despue)  */
