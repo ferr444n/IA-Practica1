@@ -36,7 +36,7 @@ public class Main {
         Centros centros = new Centros(numCentros, numHelicopteros, seed);
 
         /* Se genera el estado inicial (mirar de optimizar la data structure para luego) */
-        RescueStates estadoInicial = Generator2.generate(grupos, centros);
+        RescueStates estadoInicial = Generator1.generate(grupos, centros);
 
         /* Es fa un print per a verue l'estat inicial */
         System.out.println(estadoInicial.toString());
@@ -48,10 +48,10 @@ public class Main {
                 /** Comentar descomentar depenent de si se quiere hacer
                  * HC o SA
                  */
-                //new SuccessorHC(),
-                new SuccessorSA(),
+                new SuccessorHC(),
+                //new SuccessorSA(),
                 new IsGoalTest(),
-                new Heuristic1()
+                new Heuristic2()
         );
 
         /* Merdes de l'aima */
@@ -59,14 +59,14 @@ public class Main {
         /** Comentar / descomentar els dos searchs per
          * cambiar de hilclimbing a SA
          */
-        //Search search = new HillClimbingSearch();
+        Search search = new HillClimbingSearch();
 
-        Search search = new SimulatedAnnealingSearch(
-                100000, /** PASOS totales */
-                100, /** Iteracions per temperatura */
-                10, /** Temperatura inicial */
-                0.005 /** Velocitat de refrigeracio */
-        );
+        //Search search = new SimulatedAnnealingSearch(
+        //        100000, /** PASOS totales */
+        //        100, /** Iteracions per temperatura */
+        //        10, /** Temperatura inicial */
+        //        0.005 /** Velocitat de refrigeracio */
+        //);
 
         SearchAgent agent = new SearchAgent(problem, search);
 
