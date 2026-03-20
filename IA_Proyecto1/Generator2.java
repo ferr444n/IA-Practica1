@@ -13,14 +13,14 @@ public class Generator2 {
      * es per comprobar que al fer aixo es fan menys passos
      * i que ademes no es de tan bona qualitat la resposta.
      * 
-     *      */
+     */
     public static RescueStates generate(Grupos grupos, Centros centros) {
 
-        /** Es genera un nou estat que sera e lninicial*/
+        /** Es genera un nou estat que sera el inicial*/
         RescueStates state = new RescueStates(grupos, centros);
         int numHelis = centros.size();
 
-        /* Per a cada centre, es busca el que estigui mes a prop */
+        /* Per a cada centre, es busca el que estigui mes aprop */
         for (int g = 0; g < grupos.size(); g++) {
 
             Grupo grupo = grupos.get(g);
@@ -28,7 +28,7 @@ public class Generator2 {
             double bestDist = Double.MAX_VALUE;
             int bestHeli = 0;
 
-            /** Es mira quin helicopter es mes proper */
+            /** Es mira quin helicopter és més proper */
             for (int h = 0; h < numHelis; h++) {
 
                 Centro c = centros.get(h);

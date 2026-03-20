@@ -26,7 +26,7 @@ public class SuccessorSA implements SuccessorFunction {
         int numHelis = s.getNumHelicopteros();
 
         /** S'escolleig un operador aleatori. */
-        int operador = rand.nextInt(3);
+        int operador = rand.nextInt(2);
         if (operador == 0) { 
             /** S'intercanvien de forma aleatoria */
             int h1 = rand.nextInt(numHelis);
@@ -39,7 +39,7 @@ public class SuccessorSA implements SuccessorFunction {
                 newState.swapGrupos(h1, p1, h2, p2);
             }
 
-        } else if (operador == 1) {
+        } else {
             /** De nou, s'agafen de forma aleatoria 
              */
             int h1 = rand.nextInt(numHelis);
@@ -53,15 +53,6 @@ public class SuccessorSA implements SuccessorFunction {
                 newState.moveGrupo(h1, p1, h2, p2);
             }
 
-        } else { 
-            /** Swap d'un helicopter aleatori */
-            int h = rand.nextInt(numHelis);
-            if (s.getGruposHelicoptero(h).size() > 1) {
-
-                int p1 = rand.nextInt(s.getGruposHelicoptero(h).size());
-                int p2 = rand.nextInt(s.getGruposHelicoptero(h).size());
-                newState.swapMateixHelicopter(h, p1, p2);
-            }
         }
 
         List<Successor> ret = new ArrayList<>();
