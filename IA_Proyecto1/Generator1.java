@@ -29,14 +29,9 @@ public class Generator1 {
         ArrayList<Integer> prio1 = new ArrayList<>();
         ArrayList<Integer> prio2 = new ArrayList<>();
         for (int i = 0; i < grupos.size(); i++) {
-
             Grupo g = grupos.get(i);
-
-            if (g.getPrioridad() == 1) {
-                prio1.add(i);
-            } else {
-                prio2.add(i);
-            }
+            if (g.getPrioridad() == 1) prio1.add(i);
+            else prio2.add(i);
         }
 
         int heli = 0;

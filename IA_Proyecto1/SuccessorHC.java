@@ -26,7 +26,7 @@ public class SuccessorHC implements SuccessorFunction {
                 for (int h2 = 0; h2 < numHelis; h2++) {
                     int size2 = s.getGruposHelicoptero(h2).size();
                     for (int p2 = 0; p2 <= size2; p2++) {
-                        if(h1 == h2 && (p2 == p1 || p2 == p1 + 1)) continue; // Evitem moure a la mateixa posició
+                        if(h1 == h2 && p2 == p1) continue; // Evitem moure a la mateixa posició
                         RescueStates newState = new RescueStates(s);
                         newState.moveGrupo(h1, p1, h2, p2);
                         successors.add(new Successor("Move H" + h1 + " to H" + h2, newState));
@@ -34,12 +34,14 @@ public class SuccessorHC implements SuccessorFunction {
                 }
             }
         }
+        
 
         /** 
          * ==========================================
          * OPERADOR 2: SWAP (Intercanvi entre rutes)
          * ==========================================
          */
+        
         for (int h1 = 0; h1 < numHelis; h1++) {
             int size1 = s.getGruposHelicoptero(h1).size();
             for (int p1 = 0; p1 < size1; p1++) {
@@ -55,6 +57,7 @@ public class SuccessorHC implements SuccessorFunction {
                 }
             }
         }
+        
         return successors;
     }
 }

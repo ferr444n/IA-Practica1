@@ -111,15 +111,15 @@ public class RescueStates {
             ArrayList<Integer> lista = helicopteros.get(h);
             Centro c = centros.get(h);
 
-            s.append("Helicoptero ").append(h).append("\n");
-            s.append("Grupos: ").append(lista).append("\n");
+            //s.append("Helicoptero ").append(h).append("\n");
+            //s.append("Grupos: ").append(lista).append("\n");
 
-            s.append("Prioridad:\n");
+            //s.append("Prioridad:\n");
             for (int i = 0; i < lista.size(); i++) {
                 Grupo g = grupos.get(lista.get(i));
-                s.append(g.getPrioridad()).append(" ");
+                //s.append(g.getPrioridad()).append(" ");
             }
-            s.append("\n");
+            //s.append("\n");
 
             // Variables LOCALS només per a l'helicòpter actual
             double tiempoHeli = 0;
@@ -166,23 +166,21 @@ public class RescueStates {
             }
 
             // Si hem acabat d'iterar tots els grups però teníem un viatge a mitges...
-            if (anterior != null) {
-                tiempoHeli += distanciaCentroGrupo(c, anterior) * (60.0 / 100.0);
-                tiempoHeli += 10; // descans final
-            }
+            if (anterior != null) tiempoHeli += distanciaCentroGrupo(c, anterior) * (60.0 / 100.0);
+            
 
             // Sumem el temps calculat d'aquest helicòpter als totals globals
             tiempoTotalMision += tiempoHeli;
             tiempoTotalPrio1 += tiempoHeliPrio1;
 
             // Mostrem les estadístiques individuals d'aquest helicòpter
-            s.append("Tiempo de este helicoptero: ").append(tiempoHeli).append("\n");
-            s.append("Tiempo hasta ultimo prio 1 (H").append(h).append("): ").append(tiempoHeliPrio1).append("\n\n");
+            //s.append("Tiempo de este helicoptero: ").append(tiempoHeli).append("\n");
+            //s.append("Tiempo hasta ultimo prio 1 (H").append(h).append("): ").append(tiempoHeliPrio1).append("\n\n");
         }
 
         s.append("===============================================\n");
         s.append("Tiempo TOTAL de la mision: ").append(tiempoTotalMision).append("\n");
-        s.append("Tiempo TOTAL rescate prioridad 1: ").append(tiempoTotalPrio1).append("\n");
+        //s.append("Tiempo TOTAL rescate prioridad 1: ").append(tiempoTotalPrio1).append("\n");
         s.append("===============================================\n");
 
         return s.toString();

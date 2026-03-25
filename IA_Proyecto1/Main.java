@@ -27,44 +27,45 @@ public class Main {
         int numHelicopteros = 1; 
 
         /* Seed random. */
-        int seed = -321518597; //(int) System.currentTimeMillis();
-        System.out.println("Seed usada: " + seed);
+        for(int seed = 1; seed <= 20; seed++){; //(int) System.currentTimeMillis();
+            System.out.println("Seed usada: " + seed);
 
-        Grupos grupos = new Grupos(numGrupos, seed);
-        Centros centros = new Centros(numCentros, numHelicopteros, seed);
+            Grupos grupos = new Grupos(numGrupos, seed);
+            Centros centros = new Centros(numCentros, numHelicopteros, seed);
 
-        RescueStates estadoInicial = Generator1.generate(grupos, centros);
+            RescueStates estadoInicial = Generator1.generate(grupos, centros);
 
-        System.out.println(estadoInicial.toString());
+            System.out.println(estadoInicial.toString());
 
-        Problem problem = new Problem(
-                estadoInicial,
-                /** HC o SA
-                 */
-                new SuccessorHC(),
-                //new SuccessorSA(),
-                new IsGoalTest(),
-                new Heuristic2()
-        );
+            Problem problem = new Problem(
+                    estadoInicial,
+                    /** HC o SA
+                     */
+                    new SuccessorHC(),
+                    //new SuccessorSA(),
+                    new IsGoalTest(),
+                    new Heuristic1()
+            );
 
-        /* Merdes de l'aima */
-        
-        /** Comentar / descomentar els dos searchs per
-         * cambiar de hilclimbing a SA
-         */
-        Search search = new HillClimbingSearch();
+            /* Merdes de l'aima */
+            
+            /** Comentar / descomentar els dos searchs per
+             * cambiar de hilclimbing a SA
+             */
+            Search search = new HillClimbingSearch();
 
-        //Search search = new SimulatedAnnealingSearch(
-        //        100000, /** PASOS totales */
-        //        100, /** Iteracions per temperatura */
-        //        10, /** Temperatura inicial */
-        //        0.005 /** Velocitat de refrigeracio */
-        //);
+            //Search search = new SimulatedAnnealingSearch(
+            //        100000, /** PASOS totales */
+            //        100, /** Iteracions per temperatura */
+            //        10, /** Temperatura inicial */
+            //        0.005 /** Velocitat de refrigeracio */
+            //);
 
-        SearchAgent agent = new SearchAgent(problem, search);
+            SearchAgent agent = new SearchAgent(problem, search);
 
-        RescueStates resultado = (RescueStates) search.getGoalState();
+            RescueStates resultado = (RescueStates) search.getGoalState();
 
-        System.out.println(resultado.toString());
+            System.out.println(resultado.toString());
+        }       
     }
 }
