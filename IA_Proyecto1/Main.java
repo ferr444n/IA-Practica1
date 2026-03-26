@@ -45,8 +45,8 @@ public class Main {
 
             RescueStates resultado = (RescueStates) search.getGoalState();
             
-            System.out.println("Temps FINAL: " + resultado.toString() + "\n");
-            System.out.println("Temps d'execució del Hill Climbing: " + tempsTrigat + " ms");
+            System.out.println("Temps FINAL: " + resultado.toString());
+            System.out.println("Temps d'execució del Hill Climbing: " + tempsTrigat + " ms\n");
         }       
     }
 }

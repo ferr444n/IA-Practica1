@@ -7,100 +7,87 @@ import java.util.ArrayList;
 
 public class Heuristic3 implements HeuristicFunction {
 
+    /**
+     * CALCULA EL TEMPS TOTAL (CRITERI 1) PERÒ PENALITZA ELS VIATGES 
+     * ON L'HELICÒPTER TORNA A LA BASE SENSE ESTAR PLE.
+     */
     public double getHeuristicValue(Object state) {
         RescueStates s = (RescueStates) state;
+
         double tempsTotal = 0;
-        Grupos grupos = s.getGrups();
-        Centros centros = s.getCentros();
+        double penalitzacioSeientsBuits = 0;
+
+        Grupos grups = s.getGrups();
+        Centros centres = s.getCentros();
         int numHelis = s.getNumHelicopters();
         
         int CAPACITAT_MAX = 15; 
         int MAX_GRUPS_PER_VIATGE = 3; 
 
-        // Vector per guardar el temps individual de cada helicòpter
-        double[] tempsHelis = new double[numHelis];
-
         for (int h = 0; h < numHelis; h++) {
-            Centro c = centros.get(h);
-            ArrayList<Integer> lista = s.getGrupsHelicopter(h);
+            Centro c = centres.get(h);
+            ArrayList<Integer> llista = s.getGrupsHelicopter(h);
             
-            int personasEnHeli = 0;
-            int gruposEnViajeActual = 0;
+            int personesHeli = 0;
+            int grupsViatgeActual = 0;
             Grupo anterior = null;
-            
-            double tempsHeliActual = 0; // Temps només d'aquest helicòpter
 
-            for (int i = 0; i < lista.size(); i++) {
-                Grupo g = grupos.get(lista.get(i));
-                int numPersonas = g.getNPersonas();
+            for (int i = 0; i < llista.size(); i++) {
+                Grupo g = grups.get(llista.get(i));
+                int numPersones = g.getNPersonas();
 
-                if (personasEnHeli + numPersonas > CAPACITAT_MAX || gruposEnViajeActual == MAX_GRUPS_PER_VIATGE) {
-                    tempsHeliActual += distanciaCentroGrupo(c, anterior) * (60.0 / 100.0);
-                    tempsHeliActual += 10; 
+                // COMPROVEM SI HEM DE TORNAR A LA BASE
+                if (personesHeli + numPersones > CAPACITAT_MAX || grupsViatgeActual == MAX_GRUPS_PER_VIATGE) {
                     
-                    personasEnHeli = 0;
-                    gruposEnViajeActual = 0; 
+                    tempsTotal += distanciaCentreGrup(c, anterior) * (60.0 / 100.0);
+                    tempsTotal += 10; 
+                    
+                    int seientsBuits = CAPACITAT_MAX - personesHeli;
+                    penalitzacioSeientsBuits += seientsBuits;
+
+                    personesHeli = 0;
+                    grupsViatgeActual = 0; 
                     anterior = null;
                 }
 
-                if (anterior == null) tempsHeliActual += distanciaCentroGrupo(c, g) * (60.0 / 100.0);
-                else tempsHeliActual += distanciaGrupoGrupo(anterior, g) * (60.0 / 100.0);
+                // ANEM A BUSCAR AL GRUP
+                if (anterior == null) tempsTotal += distanciaCentreGrup(c, g) * (60.0 / 100.0);
+                else tempsTotal += distanciaGrupGrup(anterior, g) * (60.0 / 100.0);
 
+                // TEMPS DE RESCAT
                 int prio = g.getPrioridad();
-                if (prio == 1) tempsHeliActual += numPersonas * 2; 
-                else tempsHeliActual += numPersonas;
+                if (prio == 1) tempsTotal += numPersones * 2; 
+                else tempsTotal += numPersones;
 
-                personasEnHeli += numPersonas;
-                gruposEnViajeActual++; 
+                personesHeli += numPersones;
+                grupsViatgeActual++; 
                 anterior = g;
             }
 
+            // SI ENS QUEDA UN VIATGE A MITGES AL FINAL DEL DIA
             if (anterior != null) {
-                tempsHeliActual += distanciaCentroGrupo(c, anterior) * (60.0 / 100.0);
-            }
-
-            // Guardem el temps de l'helicòpter i l'acumulem al total
-            tempsHelis[h] = tempsHeliActual;
-            tempsTotal += tempsHeliActual;
-        }
-
-        // ==========================================
-        // CÀLCUL DE L'ENTROPIA DE SHANNON
-        // ==========================================
-        double entropiaActual = 0.0;
-        
-        if (tempsTotal > 0) {
-            for (int h = 0; h < numHelis; h++) {
-                if (tempsHelis[h] > 0) { // Evitem el log(0)
-                    double p_i = tempsHelis[h] / tempsTotal;
-                    // Fórmula: - p * log2(p)
-                    entropiaActual -= p_i * (Math.log(p_i) / Math.log(2)); 
-                }
+                tempsTotal += distanciaCentreGrup(c, anterior) * (60.0 / 100.0);
+                
+                int seientsBuits = CAPACITAT_MAX - personesHeli;
+                penalitzacioSeientsBuits += seientsBuits;
             }
         }
 
-        // L'entropia màxima en base 2 per 'N' elements és log2(N)
-        double entropiaMaxima = Math.log(numHelis) / Math.log(2);
-        
-        // Calculem com de lluny estem del balanç perfecte (0 = perfecte, >0 = desequilibrat)
-        double desequilibri = entropiaMaxima - entropiaActual;
+        // FACTOR DE PENALITZACIÓ
+        // Un valor més alt obligarà l'algorisme a agrupar gent peti qui peti,
+        // encara que hagi de fer més volta de distància.
+        double FACTOR_OMPLIR = 50.0; 
 
-        // FACTOR DE PES: 
-        // L'entropia és un valor molt petit (ex. entre 0 i 2.3 per a 5 helis). 
-        // Multipliquem per un factor gran perquè la penalització afecti als minuts reals de l'heurística.
-        double FACTOR_ENTROPIA = 1000.0; // Pots ajustar aquest valor als teus experiments
-
-        // Retornem el temps total + la penalització per no ser equitatius
-        return tempsTotal + (desequilibri * FACTOR_ENTROPIA);
+        return tempsTotal + (penalitzacioSeientsBuits * FACTOR_OMPLIR);
     }
 
-    private double distanciaCentroGrupo(Centro c, Grupo g) {
+    private double distanciaCentreGrup(Centro c, Grupo g) {
         double dx = c.getCoordX() - g.getCoordX();
         double dy = c.getCoordY() - g.getCoordY();
         return Math.sqrt(dx * dx + dy * dy);
     }
 
-    private double distanciaGrupoGrupo(Grupo g1, Grupo g2) {
+    private double distanciaGrupGrup(Grupo g1, Grupo g2) {
         double dx = g1.getCoordX() - g2.getCoordX();
         double dy = g1.getCoordY() - g2.getCoordY();
         return Math.sqrt(dx * dx + dy * dy);

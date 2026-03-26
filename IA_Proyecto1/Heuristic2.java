@@ -8,98 +8,96 @@ import java.util.ArrayList;
 public class Heuristic2 implements HeuristicFunction {
 
     /**
-     * La funcio heuristica per saber com de bona pot ser una solucio donada.
-     *
-     * Es basa en minimitzar la suma del temps total de tots els helicopters
-     * i prioritza els grupos de prioritat 1 sumant el temps fins a l'últim
-     * rescat de prioritat 1 de cada helicòpter.
+     * CALCULA EL TEMPS TOTAL DE LA MISSIÓ DE RESCAT, 
+     * PERÒ DONANT MÉS PES AL TEMPS DE RESCAT DELS GRUPS DE PRIORITAT 1, 
+     * AMB L'OBJECTIU D'OPTIMITZAR EL PRIMER I EL SEGON CRITERI DE QUALITAT.
      */
     public double getHeuristicValue(Object state) {
         RescueStates s = (RescueStates) state;
         
-        // Variables GLOBALS acumulatives per a tota la missió
-        double tiempoTotalMision = 0;
-        double tiempoTotalPrio1 = 0;
+        double tempsTotalMisio = 0;
+        double tempsTotalPrio1 = 0;
         
-        Grupos grupos = s.getGrups();
-        Centros centros = s.getCentros();
+        Grupos grups = s.getGrups();
+        Centros centres = s.getCentros();
         int numHelis = s.getNumHelicopters();
 
-        int CAPACIDAD_MAX = 15; // Capacitat real segons l'enunciat
-        int MAX_GRUPOS_POR_VIAJE = 3; // Màxim de grupos per sortida
+        int CAPACITAT_MAX = 15;
+        int MAX_GRUPS_PER_VIATGE = 3;
 
+        /**PER CADA HELICOPTER */
         for (int h = 0; h < numHelis; h++) {
-            Centro c = centros.get(h);
+            Centro c = centres.get(h);
             ArrayList<Integer> lista = s.getGrupsHelicopter(h);
 
-            // Variables LOCALS només per a l'helicòpter actual
-            double tiempoHeli = 0;
-            double tiempoHeliPrio1 = 0;
+            double tempsHeli = 0;
+            double tempsHeliPrio1 = 0;
+            boolean prio1Rescatada = false;
             
-            int personasEnHeli = 0;
-            int gruposEnViajeActual = 0; 
+            int personesHeli = 0;
+            int grupsViatgeActual = 0; 
             Grupo anterior = null;
 
-            // Iterem els grupos d'aquest helicòpter d'un en un
+            /**PER CADA GRUP */
             for (int i = 0; i < lista.size(); i++) {
-                Grupo g = grupos.get(lista.get(i));
-                int numPersonas = g.getNPersonas();
+                Grupo g = grups.get(lista.get(i));
+                int numPersones = g.getNPersonas();
 
-                // Comprovem si recollir aquest grup excedeix la capacitat O si ja portem 3 grupos
-                if (personasEnHeli + numPersonas > CAPACIDAD_MAX || gruposEnViajeActual == MAX_GRUPOS_POR_VIAJE) {
-                    // TORNEM A LA BASE per finalitzar el viatge actual
-                    tiempoHeli += distanciaCentroGrupo(c, anterior) * (60.0 / 100.0);
-                    tiempoHeli += 10; // Temps de descans a la base
+                /**COMPROVEM SI RECOLLIR AQUEST GRUP EXCEDEIX LA CAPACITAT O EL LÍMIT DE 3 GRUPS */
+                if (personesHeli + numPersones > CAPACITAT_MAX || grupsViatgeActual == MAX_GRUPS_PER_VIATGE) {
+                    /**TORNEM A LA BASE */
+                    tempsHeli += distanciaCentreGrup(c, anterior) * (60.0 / 100.0);
+                    tempsHeli += 10; /**TEMPS DE DESCANS */
 
-                    // Reiniciem els valors per al nou viatge
-                    personasEnHeli = 0;
-                    gruposEnViajeActual = 0; // Reiniciem el comptador de grupos
+                    if (prio1Rescatada){ 
+                        tempsHeliPrio1 = tempsHeli;
+                        prio1Rescatada = false;
+                    }
+
+                    /**REINICIEM VALORS PEL SEGÜENT VIATGE */
+                    personesHeli = 0;
+                    grupsViatgeActual = 0;
                     anterior = null;
                 }
 
-                // Anem a buscar el grup (des de la base o des de l'últim grup visitat)
-                if (anterior == null) tiempoHeli += distanciaCentroGrupo(c, g) * (60.0 / 100.0);
-                else tiempoHeli += distanciaGrupoGrupo(anterior, g) * (60.0 / 100.0);
-
-                // Temps de rescat
+                /**ANEM A BUSCAR AL GRUP */
+                if (anterior == null) tempsHeli += distanciaCentreGrup(c, g) * (60.0 / 100.0);
+                else tempsHeli += distanciaGrupGrup(anterior, g) * (60.0 / 100.0);
+                
+                /**TEMPS DE RESCAT */
                 int prio = g.getPrioridad();
                 if (prio == 1) {
-                    tiempoHeli += numPersonas * 2;
-                    // Guardem només el temps d'AQUEST helicòpter
-                    tiempoHeliPrio1 = tiempoHeli; 
+                    tempsHeli += numPersones * 2;
+                    prio1Rescatada = true; 
                 } else {
-                    tiempoHeli += numPersonas;
+                    tempsHeli += numPersones;
                 }
 
-                // Actualitzem l'estat per a la següent iteració
-                personasEnHeli += numPersonas;
-                gruposEnViajeActual++; // Afegim un grup al comptador del viatge actual
+                personesHeli += numPersones;
+                grupsViatgeActual++; 
                 anterior = g;
             }
 
-            // Si hem acabat d'iterar tots els grupos però teníem un viatge a mitges...
-            if (anterior != null) {
-                // Cal tornar a la base definitivament per acabar la ruta
-                tiempoHeli += distanciaCentroGrupo(c, anterior) * (60.0 / 100.0);
-                tiempoHeli += 10; // descans final
+            /**SI HEM ACABAT I TENIEM UN VIATGE A MITGES */
+            if (anterior != null){
+                tempsHeli += distanciaCentreGrup(c, anterior) * (60.0 / 100.0);
+                if (prio1Rescatada) tempsHeliPrio1 = tempsHeli;
             }
 
-            // ARA SÍ: Afegim el temps calculat d'aquest helicòpter a les sumes globals
-            tiempoTotalMision += tiempoHeli;
-            tiempoTotalPrio1 += tiempoHeliPrio1;
-        }
+            tempsTotalMisio += tempsHeli;
+            tempsTotalPrio1 += tempsHeliPrio1;
+        }       
 
-        // Retornem la suma de tots els temps més una penalització pel temps dels de prioritat 1
-        return tiempoTotalMision + 2 * tiempoTotalPrio1;
+        return tempsTotalMisio + 2 * tempsTotalPrio1;
     }
 
-    private double distanciaCentroGrupo(Centro c, Grupo g) {
+    private double distanciaCentreGrup(Centro c, Grupo g) {
         double dx = c.getCoordX() - g.getCoordX();
         double dy = c.getCoordY() - g.getCoordY();
         return Math.sqrt(dx * dx + dy * dy);
     }
 
-    private double distanciaGrupoGrupo(Grupo g1, Grupo g2) {
+    private double distanciaGrupGrup(Grupo g1, Grupo g2) {
         double dx = g1.getCoordX() - g2.getCoordX();
         double dy = g1.getCoordY() - g2.getCoordY();
         return Math.sqrt(dx * dx + dy * dy);
