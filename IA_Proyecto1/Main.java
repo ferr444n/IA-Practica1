@@ -14,13 +14,13 @@ public class Main {
         int numCentres = 5;
         int numHelicopters = 1; 
 
-        for(int seed = 1; seed <= 10; seed++){;
+        for(int seed = 1; seed <= 50; seed++){;
             System.out.println("Llavor utilitzada: " + seed);
 
             Grupos grupos = new Grupos(numgrupos, seed);
             Centros centres = new Centros(numCentres, numHelicopters, seed);
             
-            RescueStates estatInicial = Generator1.generate(grupos, centres);
+            RescueStates estatInicial = Generator4.generate(grupos, centres);
     
             System.out.println("Temps INICIAL: " + estatInicial.toString());
 
@@ -45,7 +45,7 @@ public class Main {
 
             RescueStates resultado = (RescueStates) search.getGoalState();
             
-            System.out.println("Temps FINAL: " + resultado.toString() + "\n");
+            System.out.println("Temps FINAL: " + resultado.toString());
             System.out.println("Temps d'execució del Hill Climbing: " + tempsTrigat + " ms\n");
         }       
     }
