@@ -1,0 +1,50 @@
+Llavor utilitzada: 1
+Temps INICIAL: 4748.608421653118
+Temps FINAL: 2820.074518836435
+Temps d'execució del Hill Climbing: 1720 ms
+
+Llavor utilitzada: 2
+Temps INICIAL: 4494.431194075176
+Temps FINAL: 2882.295025005943
+Temps d'execució del Hill Climbing: 1230 ms
+
+Llavor utilitzada: 3
+Temps INICIAL: 4744.999970949623
+Temps FINAL: 3072.662155103717
+Temps d'execució del Hill Climbing: 1106 ms
+
+Llavor utilitzada: 4
+Temps INICIAL: 4562.881952163865
+Temps FINAL: 2823.222000716637
+Temps d'execució del Hill Climbing: 1035 ms
+
+Llavor utilitzada: 5
+Temps INICIAL: 4385.185586035233
+Temps FINAL: 2636.7000720316983
+Temps d'execució del Hill Climbing: 1278 ms
+
+Llavor utilitzada: 6
+Temps INICIAL: 4162.365696067837
+Temps FINAL: 2479.639429990612
+Temps d'execució del Hill Climbing: 1066 ms
+
+Llavor utilitzada: 7
+Temps INICIAL: 4311.241815082653
+Temps FINAL: 2631.589091490023
+Temps d'execució del Hill Climbing: 1119 ms
+
+Llavor utilitzada: 8
+Temps INICIAL: 4736.443257258474
+Temps FINAL: 2841.964564106508
+Temps d'execució del Hill Climbing: 1011 ms
+
+Llavor utilitzada: 9
+Temps INICIAL: 4257.392320803339
+Temps FINAL: 2414.258738326021
+Temps d'execució del Hill Climbing: 1165 ms
+
+Llavor utilitzada: 10
+Temps INICIAL: 4471.760577702369
+Temps FINAL: 2379.333251828121
+Temps d'execució del Hill Climbing: 1058 ms
+
