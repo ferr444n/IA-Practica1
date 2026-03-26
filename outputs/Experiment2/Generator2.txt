@@ -48,3 +48,53 @@ Temps INICIAL: 2712.0665935263705
 Temps FINAL: 2256.2082491224683
 Temps d'execució del Hill Climbing: 542 ms
 
+Llavor utilitzada: 1
+Temps del generador: 647980 ns
+Temps INICIAL: 3109.521074330354
+Temps FINAL: 2639.2534291077004
+
+Llavor utilitzada: 2
+Temps del generador: 51993 ns
+Temps INICIAL: 3326.18921509536
+Temps FINAL: 2774.4250219623787
+
+Llavor utilitzada: 3
+Temps del generador: 50762 ns
+Temps INICIAL: 3468.5995479068265
+Temps FINAL: 2946.169740428797
+
+Llavor utilitzada: 4
+Temps del generador: 64844 ns
+Temps INICIAL: 3319.1843118447423
+Temps FINAL: 2732.8181051495108
+
+Llavor utilitzada: 5
+Temps del generador: 45283 ns
+Temps INICIAL: 2855.725598670989
+Temps FINAL: 2421.2634671118426
+
+Llavor utilitzada: 6
+Temps del generador: 44823 ns
+Temps INICIAL: 2802.6011547905646
+Temps FINAL: 2390.4764412680106
+
+Llavor utilitzada: 7
+Temps del generador: 50173 ns
+Temps INICIAL: 3135.3571996118044
+Temps FINAL: 2487.738769172338
+
+Llavor utilitzada: 8
+Temps del generador: 43983 ns
+Temps INICIAL: 3035.23415090874
+Temps FINAL: 2549.466148956785
+
+Llavor utilitzada: 9
+Temps del generador: 64547 ns
+Temps INICIAL: 2817.6358706944275
+Temps FINAL: 2259.5211897603904
+
+Llavor utilitzada: 10
+Temps del generador: 98254 ns
+Temps INICIAL: 2712.0665935263705
+Temps FINAL: 2256.2082491224683
+

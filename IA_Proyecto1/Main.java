@@ -19,9 +19,9 @@ public class Main {
 
             Grupos grupos = new Grupos(numgrupos, seed);
             Centros centres = new Centros(numCentres, numHelicopters, seed);
-
+            
             RescueStates estatInicial = Generator1.generate(grupos, centres);
-
+    
             System.out.println("Temps INICIAL: " + estatInicial.toString());
 
             Problem problem = new Problem(
@@ -45,7 +45,7 @@ public class Main {
 
             RescueStates resultado = (RescueStates) search.getGoalState();
             
-            System.out.println("Temps FINAL: " + resultado.toString());
+            System.out.println("Temps FINAL: " + resultado.toString() + "\n");
             System.out.println("Temps d'execució del Hill Climbing: " + tempsTrigat + " ms\n");
         }       
     }
