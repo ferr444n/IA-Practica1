@@ -1,38 +1,33 @@
 package IA_Proyecto1;
 
 import IA.Desastres.*;
-import java.util.ArrayList;
-
-/**
- * Separa per prioritats i fica primer als de prioritat 1 a qualsevol helicòpter de forma cíclica.
- */
+import java.util.*;
 
 public class Generator3 {
 
-    public static RescueStates generate(Grupos grupos, Centros centros) {
+    /**
+     * ORDENA ELS GRUPS PER NOMBRE DE PASSATGERS (MÉS A MENYS) 
+     * I ELS ASSIGNA CICLICAMENT ALS HELICÒPTERS
+     */
+    public static RescueStates generate(Grupos grups, Centros centres) {
 
-        RescueStates state = new RescueStates(grupos, centros);
+        RescueStates state = new RescueStates(grups, centres);
+        int numHelis = centres.size();
 
-        int numHelis = centros.size();
-
-        ArrayList<Integer> prio1 = new ArrayList<>();
-        ArrayList<Integer> prio2 = new ArrayList<>();
-        /**SEPAREM PER PRIORITAT */
-        for (int i = 0; i < grupos.size(); i++) {
-            Grupo g = grupos.get(i);
-            if (g.getPrioridad() == 1) prio1.add(i);
-            else prio2.add(i);
+        List<Integer> indexosGrups = new ArrayList<>();
+        for (int i = 0; i < grups.size(); i++) {
+            indexosGrups.add(i);
         }
 
-        int heli = 0;
-        /**ASSIGNEM PRIORITAT 1 PRIMER */
-        for (Integer g : prio1) {
-            state.addGrup(heli, g);
-            heli = (heli + 1) % numHelis;
-        }
+        indexosGrups.sort((id1, id2) -> {
+            int persones1 = grups.get(id1).getNPersonas();
+            int persones2 = grups.get(id2).getNPersonas();
+            return Integer.compare(persones2, persones1);
+        });
 
-        for (Integer g : prio2) {
-            state.addGrup(heli, g);
+        int heli = 0; 
+        for (int grupIndex : indexosGrups) {
+            state.addGrup(heli, grupIndex); 
             heli = (heli + 1) % numHelis;
         }
 

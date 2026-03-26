@@ -6,69 +6,49 @@ import java.util.*;
 public class Generator4 {
 
     /**
-     * SEPARA ALS GRUPS PER PRIORITAT I ELS FICA A L'HELICOPTER MÉS PROPER COMENÇANT PER PRIOTAT 1
+     * ORDENA ELS GRUPS PER NOMBRE DE PASSATGERS (MÉS A MENYS) 
+     * I ELS ASSIGNA A L'HELICÒPTER MÉS PROPER
      */
     public static RescueStates generate(Grupos grups, Centros centres) {
 
         RescueStates state = new RescueStates(grups, centres);
         int numHelis = centres.size();
 
-        ArrayList<Integer> prio1 = new ArrayList<>();
-        ArrayList<Integer> prio2 = new ArrayList<>();
-        /**SEPAREM GRUPS PER PRIORITAT*/
+        List<Integer> indexosGrups = new ArrayList<>();
         for (int i = 0; i < grups.size(); i++) {
-            Grupo g = grups.get(i);
-            if (g.getPrioridad() == 1) prio1.add(i);
-            else prio2.add(i);
+            indexosGrups.add(i);
         }
 
-        /**ASSIGNEM ALS DE PRIORITAT 1 AL MÉS PROPER */
-        for (int g = 0; g < prio1.size(); g++) {
-            int grupIndex = prio1.get(g);
-            Grupo grup = grups.get(grupIndex);
+        indexosGrups.sort((id1, id2) -> {
+            int persones1 = grups.get(id1).getNPersonas();
+            int persones2 = grups.get(id2).getNPersonas();
+            return Integer.compare(persones2, persones1);
+        });
 
-            double bestDist = Double.MAX_VALUE;
+        for (int grupIndex : indexosGrups) {
+            Grupo g = grups.get(grupIndex);
+            
             int bestHeli = 0;
+            double minDist = Double.MAX_VALUE;
 
             for (int h = 0; h < numHelis; h++) {
                 Centro c = centres.get(h);
-                double d = distanciaCentreGrup(c, grup);
-
-                if (d < bestDist) {
-                    bestDist = d;
+                double dist = distanciaCentreGrup(c, g);
+                if (dist < minDist) {
+                    minDist = dist;
                     bestHeli = h;
                 }
             }
-
-            state.addGrup(bestHeli, grupIndex);
-        }
-
-        for (int g = 0; g < prio2.size(); g++) {
-            int grupIndex = prio2.get(g);
-            Grupo grup = grups.get(grupIndex);
-            double bestDist = Double.MAX_VALUE;
-            int bestHeli = 0;
-
-            for (int h = 0; h < numHelis; h++) {
-                Centro c = centres.get(h);
-                double d = distanciaCentreGrup(c, grup);
-
-                if (d < bestDist) {
-                    bestDist = d;
-                    bestHeli = h;
-                }
-            }
-            state.addGrup(bestHeli, grupIndex);
+            
+            state.addGrup(bestHeli, grupIndex); 
         }
 
         return state;
     }
 
     private static double distanciaCentreGrup(Centro c, Grupo g) {
-
         double dx = c.getCoordX() - g.getCoordX();
         double dy = c.getCoordY() - g.getCoordY();
-
         return Math.sqrt(dx * dx + dy * dy);
     }
 }
