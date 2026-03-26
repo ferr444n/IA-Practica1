@@ -9,3 +9,5 @@ Per compilar: comp.sh desde carpeta principal
 Per executar: run.sh desde carpeta principal
 Per netejar: clean.sh desde carpeta principal
 Pot ser que calgui usar la comanda "chmod +x comp.sh run.sh clean.sh" per donar permisos d'execució als scripts.
+
+Default hi ha el generador 1 amb heuristic 1 per al hill climbing
