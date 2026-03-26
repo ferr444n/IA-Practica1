@@ -7,22 +7,22 @@ import java.util.ArrayList;
 
 public class Heuristic1 implements HeuristicFunction {
 
-    /**Calcula el temps total a recollir tots els grups.
+    /**Calcula el temps total a recollir tots els grupos.
      * No te en compte els de prioritat 1.
      */
     public double getHeuristicValue(Object state) {
     RescueStates s = (RescueStates) state;
     double tempsTotal = 0;
-    Grupos grupos = s.getGrupos();
+    Grupos grupos = s.getGrups();
     Centros centros = s.getCentros();
-    int numHelis = s.getNumHelicopteros();
+    int numHelis = s.getNumHelicopters();
     
     int CAPACITAT_MAX = 15; 
     int MAX_GRUPS_PER_VIATGE = 3; 
 
     for (int h = 0; h < numHelis; h++) {
         Centro c = centros.get(h);
-        ArrayList<Integer> lista = s.getGruposHelicoptero(h);
+        ArrayList<Integer> lista = s.getGrupsHelicopter(h);
         
         int personasEnHeli = 0;
         int gruposEnViajeActual = 0;
@@ -39,7 +39,7 @@ public class Heuristic1 implements HeuristicFunction {
                 
                 // Reiniciem els valors per al nou viatge
                 personasEnHeli = 0;
-                gruposEnViajeActual = 0; // Reiniciem el comptador de grups
+                gruposEnViajeActual = 0; // Reiniciem el comptador de grupos
                 anterior = null;
             }
 
@@ -58,7 +58,7 @@ public class Heuristic1 implements HeuristicFunction {
             anterior = g;
         }
 
-        // Si hem acabat d'iterar tots els grups però teníem un viatge a mitges...
+        // Si hem acabat d'iterar tots els grupos però teníem un viatge a mitges...
         if (anterior != null) {
             // Cal tornar a la base definitivament per acabar la ruta
             tempsTotal += distanciaCentroGrupo(c, anterior) * (60.0 / 100.0);

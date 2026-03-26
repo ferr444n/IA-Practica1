@@ -1,0 +1,1 @@
+javac -cp ".:dist/AIMA.jar:src/IA/Desastres/Desastres.jar" IA_Proyecto1/*.java

@@ -11,7 +11,7 @@ public class Heuristic2 implements HeuristicFunction {
      * La funcio heuristica per saber com de bona pot ser una solucio donada.
      *
      * Es basa en minimitzar la suma del temps total de tots els helicopters
-     * i prioritza els grups de prioritat 1 sumant el temps fins a l'últim
+     * i prioritza els grupos de prioritat 1 sumant el temps fins a l'últim
      * rescat de prioritat 1 de cada helicòpter.
      */
     public double getHeuristicValue(Object state) {
@@ -21,16 +21,16 @@ public class Heuristic2 implements HeuristicFunction {
         double tiempoTotalMision = 0;
         double tiempoTotalPrio1 = 0;
         
-        Grupos grupos = s.getGrupos();
+        Grupos grupos = s.getGrups();
         Centros centros = s.getCentros();
-        int numHelis = s.getNumHelicopteros();
+        int numHelis = s.getNumHelicopters();
 
         int CAPACIDAD_MAX = 15; // Capacitat real segons l'enunciat
-        int MAX_GRUPOS_POR_VIAJE = 3; // Màxim de grups per sortida
+        int MAX_GRUPOS_POR_VIAJE = 3; // Màxim de grupos per sortida
 
         for (int h = 0; h < numHelis; h++) {
             Centro c = centros.get(h);
-            ArrayList<Integer> lista = s.getGruposHelicoptero(h);
+            ArrayList<Integer> lista = s.getGrupsHelicopter(h);
 
             // Variables LOCALS només per a l'helicòpter actual
             double tiempoHeli = 0;
@@ -40,12 +40,12 @@ public class Heuristic2 implements HeuristicFunction {
             int gruposEnViajeActual = 0; 
             Grupo anterior = null;
 
-            // Iterem els grups d'aquest helicòpter d'un en un
+            // Iterem els grupos d'aquest helicòpter d'un en un
             for (int i = 0; i < lista.size(); i++) {
                 Grupo g = grupos.get(lista.get(i));
                 int numPersonas = g.getNPersonas();
 
-                // Comprovem si recollir aquest grup excedeix la capacitat O si ja portem 3 grups
+                // Comprovem si recollir aquest grup excedeix la capacitat O si ja portem 3 grupos
                 if (personasEnHeli + numPersonas > CAPACIDAD_MAX || gruposEnViajeActual == MAX_GRUPOS_POR_VIAJE) {
                     // TORNEM A LA BASE per finalitzar el viatge actual
                     tiempoHeli += distanciaCentroGrupo(c, anterior) * (60.0 / 100.0);
@@ -53,7 +53,7 @@ public class Heuristic2 implements HeuristicFunction {
 
                     // Reiniciem els valors per al nou viatge
                     personasEnHeli = 0;
-                    gruposEnViajeActual = 0; // Reiniciem el comptador de grups
+                    gruposEnViajeActual = 0; // Reiniciem el comptador de grupos
                     anterior = null;
                 }
 
@@ -77,7 +77,7 @@ public class Heuristic2 implements HeuristicFunction {
                 anterior = g;
             }
 
-            // Si hem acabat d'iterar tots els grups però teníem un viatge a mitges...
+            // Si hem acabat d'iterar tots els grupos però teníem un viatge a mitges...
             if (anterior != null) {
                 // Cal tornar a la base definitivament per acabar la ruta
                 tiempoHeli += distanciaCentroGrupo(c, anterior) * (60.0 / 100.0);

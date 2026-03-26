@@ -23,7 +23,7 @@ public class SuccessorSA implements SuccessorFunction {
         RescueStates s = (RescueStates) state;
         RescueStates newState = new RescueStates(s); 
 
-        int numHelis = s.getNumHelicopteros();
+        int numHelis = s.getNumHelicopters();
 
         /** S'escolleig un operador aleatori. */
         int operador = rand.nextInt(2);
@@ -32,11 +32,11 @@ public class SuccessorSA implements SuccessorFunction {
             int h1 = rand.nextInt(numHelis);
             int h2 = rand.nextInt(numHelis);
 
-            if (s.getGruposHelicoptero(h1).size() > 0 &&
-                s.getGruposHelicoptero(h2).size() > 0) {
-                int p1 = rand.nextInt(s.getGruposHelicoptero(h1).size());
-                int p2 = rand.nextInt(s.getGruposHelicoptero(h2).size());
-                newState.swapGrupos(h1, p1, h2, p2);
+            if (s.getGrupsHelicopter(h1).size() > 0 &&
+                s.getGrupsHelicopter(h2).size() > 0) {
+                int p1 = rand.nextInt(s.getGrupsHelicopter(h1).size());
+                int p2 = rand.nextInt(s.getGrupsHelicopter(h2).size());
+                newState.swap(h1, p1, h2, p2);
             }
 
         } else {
@@ -45,12 +45,12 @@ public class SuccessorSA implements SuccessorFunction {
             int h1 = rand.nextInt(numHelis);
             int h2 = rand.nextInt(numHelis);
 
-            if (s.getGruposHelicoptero(h1).size() > 0) {
+            if (s.getGrupsHelicopter(h1).size() > 0) {
 
-                int p1 = rand.nextInt(s.getGruposHelicoptero(h1).size());
-                int p2 = rand.nextInt(s.getGruposHelicoptero(h2).size() + 1);
+                int p1 = rand.nextInt(s.getGrupsHelicopter(h1).size());
+                int p2 = rand.nextInt(s.getGrupsHelicopter(h2).size() + 1);
 
-                newState.moveGrupo(h1, p1, h2, p2);
+                newState.move(h1, p1, h2, p2);
             }
 
         }

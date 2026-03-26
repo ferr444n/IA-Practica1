@@ -6,66 +6,47 @@ import aima.search.framework.*;
 import aima.search.informed.*;
 import java.util.Random;
 
-/*
-    Para compilar el codigo desde.. creo que root:
-
-    java -cp .:dist/AIMA.jar:src/IA/Desastres/Desastres.jar IA_Proyecto1.Main
-
-    Y para ejecutar:
-
-    javac -cp dist/AIMA.jar:src/IA/Desastres/Desastres.jar IA_Proyecto1/*.java
-
-    (es posible que esten intercanviadas y que sea al reves, comprobarlo luego)
-
- */
 public class Main {
 
     public static void main(String[] args) throws Exception {
 
-        int numGrupos = 100;//(((int) System.currentTimeMillis())%1000) + 1;
-        int numCentros = 5;//(((int) System.currentTimeMillis())%10) + 1;
-        int numHelicopteros = 1; 
+        int numgrupos = 100;
+        int numCentres = 5;
+        int numHelicopters = 1; 
 
-        /* Seed random. */
-        for(int seed = 1; seed <= 20; seed++){; //(int) System.currentTimeMillis();
-            System.out.println("Seed usada: " + seed);
+        for(int seed = 1; seed <= 10; seed++){;
+            System.out.println("Llavor utilitzada: " + seed);
 
-            Grupos grupos = new Grupos(numGrupos, seed);
-            Centros centros = new Centros(numCentros, numHelicopteros, seed);
+            Grupos grupos = new Grupos(numgrupos, seed);
+            Centros centres = new Centros(numCentres, numHelicopters, seed);
 
-            RescueStates estadoInicial = Generator1.generate(grupos, centros);
+            RescueStates estatInicial = Generator1.generate(grupos, centres);
 
-            System.out.println(estadoInicial.toString());
+            System.out.println("Temps INICIAL: " + estatInicial.toString());
 
             Problem problem = new Problem(
-                    estadoInicial,
-                    /** HC o SA
-                     */
+                    estatInicial,
+                    /**TRIAR ENTRE HC I SA*/
                     new SuccessorHC(),
                     //new SuccessorSA(),
                     new IsGoalTest(),
                     new Heuristic1()
             );
-
-            /* Merdes de l'aima */
             
-            /** Comentar / descomentar els dos searchs per
-             * cambiar de hilclimbing a SA
-             */
+            //Search search = new SimulatedAnnealingSearch(100000, 100, 10, 0.005);
             Search search = new HillClimbingSearch();
-
-            //Search search = new SimulatedAnnealingSearch(
-            //        100000, /** PASOS totales */
-            //        100, /** Iteracions per temperatura */
-            //        10, /** Temperatura inicial */
-            //        0.005 /** Velocitat de refrigeracio */
-            //);
-
+            
+            /**SERVEIX PER MESURAR EL TEMPS D'EXECUCIO DE L'ALGORISME*/
+            long startTime = System.currentTimeMillis();
             SearchAgent agent = new SearchAgent(problem, search);
+            long endTime = System.currentTimeMillis();
+
+            long tempsTrigat = endTime - startTime;
 
             RescueStates resultado = (RescueStates) search.getGoalState();
-
-            System.out.println(resultado.toString());
+            
+            System.out.println("Temps FINAL: " + resultado.toString() + "\n");
+            System.out.println("Temps d'execució del Hill Climbing: " + tempsTrigat + " ms");
         }       
     }
 }

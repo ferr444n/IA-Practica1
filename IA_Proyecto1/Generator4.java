@@ -6,41 +6,33 @@ import java.util.*;
 public class Generator4 {
 
     /**
-     * Basicamente se asignan los grupos al centro mas cercano poniendo primero a los de prioriad 1.
-     * 
-     * es per comprobar que al fer aixo es fan menys passos
-     * i que ademes no es de tan bona qualitat la resposta.
-     * 
+     * SEPARA ALS GRUPS PER PRIORITAT I ELS FICA A L'HELICOPTER MÉS PROPER COMENÇANT PER PRIOTAT 1
      */
-    public static RescueStates generate(Grupos grupos, Centros centros) {
+    public static RescueStates generate(Grupos grups, Centros centres) {
 
-        /** Es genera un nou estat que sera el inicial*/
-        RescueStates state = new RescueStates(grupos, centros);
-        int numHelis = centros.size();
+        RescueStates state = new RescueStates(grups, centres);
+        int numHelis = centres.size();
 
-        /* Es fa la separacion de grups per prioritat */
         ArrayList<Integer> prio1 = new ArrayList<>();
         ArrayList<Integer> prio2 = new ArrayList<>();
-        for (int i = 0; i < grupos.size(); i++) {
-            Grupo g = grupos.get(i);
+        /**SEPAREM GRUPS PER PRIORITAT*/
+        for (int i = 0; i < grups.size(); i++) {
+            Grupo g = grups.get(i);
             if (g.getPrioridad() == 1) prio1.add(i);
             else prio2.add(i);
         }
 
-        /* Per a cada grup de prioritat 1, es busca el que estigui mes aprop */
+        /**ASSIGNEM ALS DE PRIORITAT 1 AL MÉS PROPER */
         for (int g = 0; g < prio1.size(); g++) {
-            int grupoIndex = prio1.get(g);
-            Grupo grupo = grupos.get(grupoIndex);
+            int grupIndex = prio1.get(g);
+            Grupo grup = grups.get(grupIndex);
 
             double bestDist = Double.MAX_VALUE;
             int bestHeli = 0;
 
-            /** Es mira quin helicopter és més proper */
             for (int h = 0; h < numHelis; h++) {
-
-                Centro c = centros.get(h);
-
-                double d = distance(c, grupo);
+                Centro c = centres.get(h);
+                double d = distanciaCentreGrup(c, grup);
 
                 if (d < bestDist) {
                     bestDist = d;
@@ -48,36 +40,31 @@ public class Generator4 {
                 }
             }
 
-            state.addGrupo(bestHeli, g);
+            state.addGrup(bestHeli, grupIndex);
         }
 
-        /* Lo mateix amb la prio 2 */
         for (int g = 0; g < prio2.size(); g++) {
-            int grupoIndex = prio2.get(g);
-            Grupo grupo = grupos.get(grupoIndex);
+            int grupIndex = prio2.get(g);
+            Grupo grup = grups.get(grupIndex);
             double bestDist = Double.MAX_VALUE;
             int bestHeli = 0;
+
             for (int h = 0; h < numHelis; h++) {
-
-                Centro c = centros.get(h);
-
-                double d = distance(c, grupo);
+                Centro c = centres.get(h);
+                double d = distanciaCentreGrup(c, grup);
 
                 if (d < bestDist) {
                     bestDist = d;
                     bestHeli = h;
                 }
             }
-            state.addGrupo(bestHeli, grupoIndex);
+            state.addGrup(bestHeli, grupIndex);
         }
 
         return state;
     }
 
-    /**
-     * La distancias entre centre i grup.
-     */
-    private static double distance(Centro c, Grupo g) {
+    private static double distanciaCentreGrup(Centro c, Grupo g) {
 
         double dx = c.getCoordX() - g.getCoordX();
         double dy = c.getCoordY() - g.getCoordY();

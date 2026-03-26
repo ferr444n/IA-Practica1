@@ -5,188 +5,153 @@ import java.util.ArrayList;
 
 public class RescueStates {
 
-    
-    private Grupos grupos;
-    private Centros centros;
-
-    /* +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+ */
-    /*                   Estructura de dades                         */
-    /* +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+ */
+    private Grupos grups;
+    private Centros centres;
 
     /* Per a cada helicopter guardem la llista de grups als que va a recollir en ordre: 
     es a dir podem tenir [1,5,3,4,6,7,96] i els viatges seran el màxim de grups sencers
     seguits que poguem agafar amb un màxim de 3. */
-    private ArrayList<ArrayList<Integer>> helicopteros;
+    private ArrayList<ArrayList<Integer>> helicopters;
 
-    /* +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+ */
-    /*                    Constructors                               */
-    /* +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+ */
-
-    public RescueStates(Grupos grupos, Centros centros) {
-        this.grupos = grupos;
-        this.centros = centros;
+    public RescueStates(Grupos grups, Centros centres) {
+        this.grups = grups;
+        this.centres = centres;
     
-        int numHelicopteros = centros.getFirst().getNHelicopteros() * centros.size(); 
-        helicopteros = new ArrayList<>();
+        int numHelicopteros = centres.getFirst().getNHelicopteros() * centres.size(); 
+        helicopters = new ArrayList<>();
 
         for (int i = 0; i < numHelicopteros; i++) 
-            helicopteros.add(new ArrayList<>());
+            helicopters.add(new ArrayList<>());
     }
 
     /* Constructor de còpia per a generar els successors a partir d'un estat inicial. */
     public RescueStates(RescueStates state) {
-        this.grupos = state.grupos;
-        this.centros = state.centros;
+        this.grups = state.grups;
+        this.centres = state.centres;
 
-        helicopteros = new ArrayList<>();
+        helicopters = new ArrayList<>();
 
-        /* Es copien les rutes del estat inical. */
-        for (ArrayList<Integer> lista : state.helicopteros) 
-            helicopteros.add(new ArrayList<>(lista));
+        for (ArrayList<Integer> llista : state.helicopters) 
+            helicopters.add(new ArrayList<>(llista));
     }
 
-    /* +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+ */
-    /*                          OPERADORS                            */
-    /* +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+ */
-
     /* Afegir un grup a la ruta d'un helicopter, al final de tot.*/
-    public void addGrupo(int helicoptero, int grupo) {
-        helicopteros.get(helicoptero).add(grupo);
+    public void addGrup(int helicopter, int grup) {
+        helicopters.get(helicopter).add(grup);
     }
 
     /* Moure un grup d'una posició a una altra. Entre helicopters diferents o el mateix.*/
-    public void moveGrupo(int heliOrigen, int posOrigen, int heliDestino, int posDestino) {
-        int grupo = helicopteros.get(heliOrigen).remove(posOrigen);
+    public void move(int heliOrigen, int posOrigen, int heliDesti, int posDesti) {
+        int grup = helicopters.get(heliOrigen).remove(posOrigen);
 
-        ArrayList<Integer> destino = helicopteros.get(heliDestino);
-        if (posDestino > destino.size()) posDestino = destino.size();
+        ArrayList<Integer> destino = helicopters.get(heliDesti);
+        if (posDesti > destino.size()) posDesti = destino.size();
 
-        destino.add(posDestino, grupo);
+        destino.add(posDesti, grup);
     }
 
     /* Intercanviar dos grups dins del mateix helicopter o diferents */
-    public void swapGrupos(int heli1, int pos1, int heli2, int pos2) {
-        int grupo1 = helicopteros.get(heli1).get(pos1);
-        int grupo2 = helicopteros.get(heli2).get(pos2);
+    public void swap(int heli1, int pos1, int heli2, int pos2) {
+        int grup1 = helicopters.get(heli1).get(pos1);
+        int grup2 = helicopters.get(heli2).get(pos2);
 
-        helicopteros.get(heli1).set(pos1, grupo2);
-        helicopteros.get(heli2).set(pos2, grupo1);
+        helicopters.get(heli1).set(pos1, grup2);
+        helicopters.get(heli2).set(pos2, grup1);
     }
 
-
-    /* +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+ */
-    /*                 GETTERS y SETTERS                             */
-    /* +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+ */
-
-    public ArrayList<Integer> getGruposHelicoptero(int heli) {
-        return helicopteros.get(heli);
+    public ArrayList<Integer> getGrupsHelicopter(int heli) {
+        return helicopters.get(heli);
     }
 
-    public int getNumHelicopteros() {
-        return helicopteros.size();
+    public int getNumHelicopters() {
+        return helicopters.size();
     }
 
-    public Grupos getGrupos() {
-        return grupos;
+    public Grupos getGrups() {
+        return grups;
     }
 
     public Centros getCentros() {
-        return centros;
+        return centres;
     }
 
     @Override
     public String toString() {
-
         StringBuilder s = new StringBuilder();
 
-        // Variables GLOBALS per a tota la missió
-        double tiempoTotalMision = 0;
-        double tiempoTotalPrio1 = 0;
+        double tempsTotalMisio = 0;
+        double tempsTotalPrio1 = 0;
         
-        int CAPACIDAD_MAX = 15;
-        int MAX_GRUPOS_POR_VIAJE = 3;
+        int CAPACITAT_MAX = 15;
+        int MAX_GRUPS_PER_VIATGE = 3;
 
-        for (int h = 0; h < helicopteros.size(); h++) {
+        /**PER CADA HELICOPTER */
+        for (int h = 0; h < helicopters.size(); h++) {
 
-            ArrayList<Integer> lista = helicopteros.get(h);
-            Centro c = centros.get(h);
+            ArrayList<Integer> llista = helicopters.get(h);
+            Centro c = centres.get(h);
 
-            //s.append("Helicoptero ").append(h).append("\n");
-            //s.append("Grupos: ").append(lista).append("\n");
-
-            //s.append("Prioridad:\n");
-            for (int i = 0; i < lista.size(); i++) {
-                Grupo g = grupos.get(lista.get(i));
-                //s.append(g.getPrioridad()).append(" ");
+            for (int i = 0; i < llista.size(); i++){
+                Grupo g = grups.get(llista.get(i));
             }
-            //s.append("\n");
 
-            // Variables LOCALS només per a l'helicòpter actual
-            double tiempoHeli = 0;
-            double tiempoHeliPrio1 = 0;
+            double tempsHeli = 0;
+            double tempsHeliPrio1 = 0;
 
-            int personasEnHeli = 0;
-            int gruposEnViajeActual = 0;
+            int personesHeli = 0;
+            int grupsViatgeActual = 0;
             Grupo anterior = null;
-
-            for (int i = 0; i < lista.size(); i++) {
-                Grupo g = grupos.get(lista.get(i));
+            
+            /**PER CADA GRUP */
+            for (int i = 0; i < llista.size(); i++) {
+                Grupo g = grups.get(llista.get(i));
                 int numPersonas = g.getNPersonas();
 
-                // 1. Comprovem si recollir aquest grup excedeix la capacitat O si ja portem 3 grups
-                if (personasEnHeli + numPersonas > CAPACIDAD_MAX || gruposEnViajeActual == MAX_GRUPOS_POR_VIAJE) {
-                    // TORNEM A LA BASE per finalitzar el viatge actual
-                    tiempoHeli += distanciaCentroGrupo(c, anterior) * (60.0 / 100.0);
-                    tiempoHeli += 10; // Temps de descans a la base
+                /**COMPROVEM SI RECOLLIR AQUEST GRUP EXCEDEIX LA CAPACITAT O EL LÍMIT DE 3 GRUPS */
+                if (personesHeli + numPersonas > CAPACITAT_MAX || grupsViatgeActual == MAX_GRUPS_PER_VIATGE) {
+                    /**TORNEM A LA BASE */
+                    tempsHeli += distanciaCentreGrup(c, anterior) * (60.0 / 100.0);
+                    tempsHeli += 10; /**TEMPS DE DESCANS */
 
-                    // Reiniciem els valors per al nou viatge
-                    personasEnHeli = 0;
-                    gruposEnViajeActual = 0;
+                    /**REINICIEM VALORS PEL SEGÜENT VIATGE */
+                    personesHeli = 0;
+                    grupsViatgeActual = 0;
                     anterior = null;
                 }
 
-                // 2. Anem a buscar el grup
-                if (anterior == null) tiempoHeli += distanciaCentroGrupo(c, g) * (60.0 / 100.0);
-                else tiempoHeli += distanciaGrupoGrupo(anterior, g) * (60.0 / 100.0);
+                /**ANEM A BUSCAR AL GRUP */
+                if (anterior == null) tempsHeli += distanciaCentreGrup(c, g) * (60.0 / 100.0);
+                else tempsHeli += distanciaGrupGrup(anterior, g) * (60.0 / 100.0);
                 
 
-                // 3. Temps de rescat
+                /**TEMPS DE RESCAT */
                 int prio = g.getPrioridad();
                 if (prio == 1) {
-                    tiempoHeli += numPersonas * 2;
-                    tiempoHeliPrio1 = tiempoHeli; // Guardem només el temps d'AQUEST helicòpter
+                    tempsHeli += numPersonas * 2;
+                    tempsHeliPrio1 = tempsHeli;
                 } else {
-                    tiempoHeli += numPersonas;
+                    tempsHeli += numPersonas;
                 }
 
-                // 4. Actualitzem l'estat per a la següent iteració
-                personasEnHeli += numPersonas;
-                gruposEnViajeActual++;
+                personesHeli += numPersonas;
+                grupsViatgeActual++;
                 anterior = g;
             }
 
-            // Si hem acabat d'iterar tots els grups però teníem un viatge a mitges...
-            if (anterior != null) tiempoHeli += distanciaCentroGrupo(c, anterior) * (60.0 / 100.0);
+            /**SI HEM ACABAT I TENIEM UN VIATGE A MITGES */
+            if (anterior != null) tempsHeli += distanciaCentreGrup(c, anterior) * (60.0 / 100.0);
             
-
-            // Sumem el temps calculat d'aquest helicòpter als totals globals
-            tiempoTotalMision += tiempoHeli;
-            tiempoTotalPrio1 += tiempoHeliPrio1;
-
-            // Mostrem les estadístiques individuals d'aquest helicòpter
-            //s.append("Tiempo de este helicoptero: ").append(tiempoHeli).append("\n");
-            //s.append("Tiempo hasta ultimo prio 1 (H").append(h).append("): ").append(tiempoHeliPrio1).append("\n\n");
+            /**SUMEM AQUEST HELICOPTER AL TOTAL */
+            tempsTotalMisio += tempsHeli;
+            tempsTotalPrio1 += tempsHeliPrio1;
         }
 
-        s.append("===============================================\n");
-        s.append("Tiempo TOTAL de la mision: ").append(tiempoTotalMision).append("\n");
-        //s.append("Tiempo TOTAL rescate prioridad 1: ").append(tiempoTotalPrio1).append("\n");
-        s.append("===============================================\n");
+        s.append(tempsTotalMisio);
 
         return s.toString();
     }
 
-    private double distanciaCentroGrupo(Centro c, Grupo g) {
+    private double distanciaCentreGrup(Centro c, Grupo g) {
 
         double dx = c.getCoordX() - g.getCoordX();
         double dy = c.getCoordY() - g.getCoordY();
@@ -194,7 +159,7 @@ public class RescueStates {
         return Math.sqrt(dx * dx + dy * dy);
     }
 
-    private double distanciaGrupoGrupo(Grupo g1, Grupo g2) {
+    private double distanciaGrupGrup(Grupo g1, Grupo g2) {
 
         double dx = g1.getCoordX() - g2.getCoordX();
         double dy = g1.getCoordY() - g2.getCoordY();

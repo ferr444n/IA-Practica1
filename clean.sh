@@ -1,0 +1,1 @@
+find IA_Proyecto1 -name "*.class" -type f -delete

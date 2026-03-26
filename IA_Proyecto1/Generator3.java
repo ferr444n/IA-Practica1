@@ -4,30 +4,35 @@ import IA.Desastres.*;
 import java.util.ArrayList;
 
 /**
- * 
- * Generador aun mas simple.
- * genera los helicopteros y sus grupos sin
- * tener nada en cuenta. Solo los asigna sin más.
- * 
- * 
+ * Separa per prioritats i fica primer als de prioritat 1 a qualsevol helicòpter de forma cíclica.
  */
 
 public class Generator3 {
 
     public static RescueStates generate(Grupos grupos, Centros centros) {
 
-        /* Es construeix un estat buit */
         RescueStates state = new RescueStates(grupos, centros);
 
-        /** S'agafa el nombre d'helicopters */
         int numHelis = centros.size();
-        int heli = 0;
 
-        /** Es reparteixen equitativament sense cap precomput */
-        for(int i = 0; i < grupos.size(); ++i)
-        {
+        ArrayList<Integer> prio1 = new ArrayList<>();
+        ArrayList<Integer> prio2 = new ArrayList<>();
+        /**SEPAREM PER PRIORITAT */
+        for (int i = 0; i < grupos.size(); i++) {
             Grupo g = grupos.get(i);
-            state.addGrupo(heli, i);
+            if (g.getPrioridad() == 1) prio1.add(i);
+            else prio2.add(i);
+        }
+
+        int heli = 0;
+        /**ASSIGNEM PRIORITAT 1 PRIMER */
+        for (Integer g : prio1) {
+            state.addGrup(heli, g);
+            heli = (heli + 1) % numHelis;
+        }
+
+        for (Integer g : prio2) {
+            state.addGrup(heli, g);
             heli = (heli + 1) % numHelis;
         }
 

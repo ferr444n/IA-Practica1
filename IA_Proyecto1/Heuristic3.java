@@ -7,88 +7,91 @@ import java.util.ArrayList;
 
 public class Heuristic3 implements HeuristicFunction {
 
-    /**
-     * La funció heurística per saber com de bona pot ser una solució donada.
-     *
-     * Criteri Heurística 3:
-     * Minimitza la suma del temps total de tots els helicòpters, PERÒ
-     * afegeix una penalització EXTREMA a la suma dels temps d'arribada 
-     * a *CADA UN* dels grups de prioritat 1. Això força a recollir-los els primers.
-     */
     public double getHeuristicValue(Object state) {
         RescueStates s = (RescueStates) state;
-        
-        // Variables GLOBALS acumulatives per a tota la missió
-        double tiempoTotalMision = 0;
-        double sumaTodosTiemposPrio1 = 0; // Acumularà cada un dels temps d'espera dels P1
-        
-        Grupos grupos = s.getGrupos();
+        double tempsTotal = 0;
+        Grupos grupos = s.getGrups();
         Centros centros = s.getCentros();
-        int numHelis = s.getNumHelicopteros();
+        int numHelis = s.getNumHelicopters();
+        
+        int CAPACITAT_MAX = 15; 
+        int MAX_GRUPS_PER_VIATGE = 3; 
 
-        int CAPACIDAD_MAX = 15;
-        int MAX_GRUPOS_POR_VIAJE = 3;
+        // Vector per guardar el temps individual de cada helicòpter
+        double[] tempsHelis = new double[numHelis];
 
         for (int h = 0; h < numHelis; h++) {
             Centro c = centros.get(h);
-            ArrayList<Integer> lista = s.getGruposHelicoptero(h);
-
-            // Variables LOCALS per a l'helicòpter actual
-            double tiempoHeli = 0;
-            double sumaTiemposPrio1Heli = 0; // Temps d'espera P1 acumulats D'AQUEST helicòpter
+            ArrayList<Integer> lista = s.getGrupsHelicopter(h);
             
             int personasEnHeli = 0;
-            int gruposEnViajeActual = 0; 
+            int gruposEnViajeActual = 0;
             Grupo anterior = null;
+            
+            double tempsHeliActual = 0; // Temps només d'aquest helicòpter
 
             for (int i = 0; i < lista.size(); i++) {
                 Grupo g = grupos.get(lista.get(i));
                 int numPersonas = g.getNPersonas();
 
-                // Comprovem límits de capacitat o de nombre de grups
-                if (personasEnHeli + numPersonas > CAPACIDAD_MAX || gruposEnViajeActual == MAX_GRUPOS_POR_VIAJE) {
-                    tiempoHeli += distanciaCentroGrupo(c, anterior) * (60.0 / 100.0);
-                    tiempoHeli += 10; // Descans a base
-
+                if (personasEnHeli + numPersonas > CAPACITAT_MAX || gruposEnViajeActual == MAX_GRUPS_PER_VIATGE) {
+                    tempsHeliActual += distanciaCentroGrupo(c, anterior) * (60.0 / 100.0);
+                    tempsHeliActual += 10; 
+                    
                     personasEnHeli = 0;
-                    gruposEnViajeActual = 0;
+                    gruposEnViajeActual = 0; 
                     anterior = null;
                 }
 
-                // Sumar temps de desplaçament
-                if (anterior == null) tiempoHeli += distanciaCentroGrupo(c, g) * (60.0 / 100.0);
-                else tiempoHeli += distanciaGrupoGrupo(anterior, g) * (60.0 / 100.0);
+                if (anterior == null) tempsHeliActual += distanciaCentroGrupo(c, g) * (60.0 / 100.0);
+                else tempsHeliActual += distanciaGrupoGrupo(anterior, g) * (60.0 / 100.0);
 
                 int prio = g.getPrioridad();
-                if (prio == 1) {
-                    tiempoHeli += numPersonas * 2; // Rescat: 2 min/persona
-                    
-                    // DIFERÈNCIA CLAU AMB L'HEURÍSTICA 2: ACUMULEM!
-                    // A cada grup de P1 que trobem, sumem el minut en què hem arribat.
-                    // Si el recollim tard, el valor serà enorme.
-                    sumaTiemposPrio1Heli += tiempoHeli; 
-                } else {
-                    tiempoHeli += numPersonas; // Rescat: 1 min/persona
-                }
+                if (prio == 1) tempsHeliActual += numPersonas * 2; 
+                else tempsHeliActual += numPersonas;
 
                 personasEnHeli += numPersonas;
-                gruposEnViajeActual++;
+                gruposEnViajeActual++; 
                 anterior = g;
             }
 
             if (anterior != null) {
-                tiempoHeli += distanciaCentroGrupo(c, anterior) * (60.0 / 100.0);
-                tiempoHeli += 10;
+                tempsHeliActual += distanciaCentroGrupo(c, anterior) * (60.0 / 100.0);
             }
 
-            // Sumar els càlculs d'aquest helicòpter al sumatori global
-            tiempoTotalMision += tiempoHeli;
-            sumaTodosTiemposPrio1 += sumaTiemposPrio1Heli;
+            // Guardem el temps de l'helicòpter i l'acumulem al total
+            tempsHelis[h] = tempsHeliActual;
+            tempsTotal += tempsHeliActual;
         }
 
-        // PESOS: Li donem una prioritat brutal al temps d'espera de P1 respecte al de la missió.
-        // Tu pots ajustar el valor '100' més endavant a l'hora de fer la memòria per veure l'impacte.
-        return tiempoTotalMision + 100 * sumaTodosTiemposPrio1;
+        // ==========================================
+        // CÀLCUL DE L'ENTROPIA DE SHANNON
+        // ==========================================
+        double entropiaActual = 0.0;
+        
+        if (tempsTotal > 0) {
+            for (int h = 0; h < numHelis; h++) {
+                if (tempsHelis[h] > 0) { // Evitem el log(0)
+                    double p_i = tempsHelis[h] / tempsTotal;
+                    // Fórmula: - p * log2(p)
+                    entropiaActual -= p_i * (Math.log(p_i) / Math.log(2)); 
+                }
+            }
+        }
+
+        // L'entropia màxima en base 2 per 'N' elements és log2(N)
+        double entropiaMaxima = Math.log(numHelis) / Math.log(2);
+        
+        // Calculem com de lluny estem del balanç perfecte (0 = perfecte, >0 = desequilibrat)
+        double desequilibri = entropiaMaxima - entropiaActual;
+
+        // FACTOR DE PES: 
+        // L'entropia és un valor molt petit (ex. entre 0 i 2.3 per a 5 helis). 
+        // Multipliquem per un factor gran perquè la penalització afecti als minuts reals de l'heurística.
+        double FACTOR_ENTROPIA = 1000.0; // Pots ajustar aquest valor als teus experiments
+
+        // Retornem el temps total + la penalització per no ser equitatius
+        return tempsTotal + (desequilibri * FACTOR_ENTROPIA);
     }
 
     private double distanciaCentroGrupo(Centro c, Grupo g) {
