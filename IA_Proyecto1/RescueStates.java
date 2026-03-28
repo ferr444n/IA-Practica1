@@ -16,12 +16,13 @@ public class RescueStates {
     public RescueStates(Grupos grups, Centros centres) {
         this.grups = grups;
         this.centres = centres;
-    
-        int numHelicopteros = centres.getFirst().getNHelicopteros() * centres.size(); 
+
+        int numHelicopteros = centres.getFirst().getNHelicopteros() * centres.size();
         helicopters = new ArrayList<>();
 
-        for (int i = 0; i < numHelicopteros; i++) 
+        for (int i = 0; i < numHelicopteros; i++) {
             helicopters.add(new ArrayList<>());
+        }
     }
 
     /* Constructor de còpia per a generar els successors a partir d'un estat inicial. */
@@ -31,8 +32,9 @@ public class RescueStates {
 
         helicopters = new ArrayList<>();
 
-        for (ArrayList<Integer> llista : state.helicopters) 
+        for (ArrayList<Integer> llista : state.helicopters) {
             helicopters.add(new ArrayList<>(llista));
+        }
     }
 
     /* Afegir un grup a la ruta d'un helicopter, al final de tot.*/
@@ -45,7 +47,9 @@ public class RescueStates {
         int grup = helicopters.get(heliOrigen).remove(posOrigen);
 
         ArrayList<Integer> destino = helicopters.get(heliDesti);
-        if (posDesti > destino.size()) posDesti = destino.size();
+        if (posDesti > destino.size()) {
+            posDesti = destino.size();
+        }
 
         destino.add(posDesti, grup);
     }
@@ -81,17 +85,20 @@ public class RescueStates {
 
         double tempsTotalMisio = 0;
         double tempsTotalPrio1 = 0;
-        
+
         int CAPACITAT_MAX = 15;
         int MAX_GRUPS_PER_VIATGE = 3;
 
-        /**PER CADA HELICOPTER */
+        /**
+         * PER CADA HELICOPTER
+         */
         for (int h = 0; h < helicopters.size(); h++) {
 
             ArrayList<Integer> llista = helicopters.get(h);
-            Centro c = centres.get(h);
+            int helicPorCentro = centres.get(0).getNHelicopteros();
+            Centro c = centres.get(h / helicPorCentro);
 
-            for (int i = 0; i < llista.size(); i++){
+            for (int i = 0; i < llista.size(); i++) {
                 Grupo g = grups.get(llista.get(i));
             }
 
@@ -101,30 +108,48 @@ public class RescueStates {
             int personesHeli = 0;
             int grupsViatgeActual = 0;
             Grupo anterior = null;
-            
-            /**PER CADA GRUP */
+
+            /**
+             * PER CADA GRUP
+             */
             for (int i = 0; i < llista.size(); i++) {
                 Grupo g = grups.get(llista.get(i));
                 int numPersonas = g.getNPersonas();
 
-                /**COMPROVEM SI RECOLLIR AQUEST GRUP EXCEDEIX LA CAPACITAT O EL LÍMIT DE 3 GRUPS */
+                /**
+                 * COMPROVEM SI RECOLLIR AQUEST GRUP EXCEDEIX LA CAPACITAT O EL
+                 * LÍMIT DE 3 GRUPS
+                 */
                 if (personesHeli + numPersonas > CAPACITAT_MAX || grupsViatgeActual == MAX_GRUPS_PER_VIATGE) {
-                    /**TORNEM A LA BASE */
+                    /**
+                     * TORNEM A LA BASE
+                     */
                     tempsHeli += distanciaCentreGrup(c, anterior) * (60.0 / 100.0);
-                    tempsHeli += 10; /**TEMPS DE DESCANS */
+                    tempsHeli += 10;
+                    /**
+                     * TEMPS DE DESCANS
+                     */
 
-                    /**REINICIEM VALORS PEL SEGÜENT VIATGE */
+                    /**
+                     * REINICIEM VALORS PEL SEGÜENT VIATGE
+                     */
                     personesHeli = 0;
                     grupsViatgeActual = 0;
                     anterior = null;
                 }
 
-                /**ANEM A BUSCAR AL GRUP */
-                if (anterior == null) tempsHeli += distanciaCentreGrup(c, g) * (60.0 / 100.0);
-                else tempsHeli += distanciaGrupGrup(anterior, g) * (60.0 / 100.0);
-                
+                /**
+                 * ANEM A BUSCAR AL GRUP
+                 */
+                if (anterior == null) {
+                    tempsHeli += distanciaCentreGrup(c, g) * (60.0 / 100.0); 
+                }else {
+                    tempsHeli += distanciaGrupGrup(anterior, g) * (60.0 / 100.0);
+                }
 
-                /**TEMPS DE RESCAT */
+                /**
+                 * TEMPS DE RESCAT
+                 */
                 int prio = g.getPrioridad();
                 if (prio == 1) {
                     tempsHeli += numPersonas * 2;
@@ -138,10 +163,16 @@ public class RescueStates {
                 anterior = g;
             }
 
-            /**SI HEM ACABAT I TENIEM UN VIATGE A MITGES */
-            if (anterior != null) tempsHeli += distanciaCentreGrup(c, anterior) * (60.0 / 100.0);
-            
-            /**SUMEM AQUEST HELICOPTER AL TOTAL */
+            /**
+             * SI HEM ACABAT I TENIEM UN VIATGE A MITGES
+             */
+            if (anterior != null) {
+                tempsHeli += distanciaCentreGrup(c, anterior) * (60.0 / 100.0);
+            }
+
+            /**
+             * SUMEM AQUEST HELICOPTER AL TOTAL
+             */
             tempsTotalMisio += tempsHeli;
             tempsTotalPrio1 += tempsHeliPrio1;
         }

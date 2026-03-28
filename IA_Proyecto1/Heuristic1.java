@@ -8,8 +8,8 @@ import java.util.ArrayList;
 public class Heuristic1 implements HeuristicFunction {
 
     /**
-     * CALCULA EL TEMPS TOTAL DE LA MISSIÓ DE RESCAT
-     * PER OPTIMITZAR EL PRIMER CRITERI DE QUALITAT.
+     * CALCULA EL TEMPS TOTAL DE LA MISSIÓ DE RESCAT PER OPTIMITZAR EL PRIMER
+     * CRITERI DE QUALITAT.
      */
     public double getHeuristicValue(Object state) {
         RescueStates s = (RescueStates) state;
@@ -17,52 +17,81 @@ public class Heuristic1 implements HeuristicFunction {
         Grupos grups = s.getGrups();
         Centros centres = s.getCentros();
         int numHelis = s.getNumHelicopters();
-        
-        int CAPACITAT_MAX = 15; 
-        int MAX_GRUPS_PER_VIATGE = 3; 
-        
-        /**PER CADA HELICOPTER */
+
+        int CAPACITAT_MAX = 15;
+        int MAX_GRUPS_PER_VIATGE = 3;
+
+        /**
+         * PER CADA HELICOPTER
+         */
         for (int h = 0; h < numHelis; h++) {
-            Centro c = centres.get(h);
+            int helicPorCentro = centres.get(0).getNHelicopteros();
+            Centro c = centres.get(h / helicPorCentro);
             ArrayList<Integer> llista = s.getGrupsHelicopter(h);
-            
+
             int personesHeli = 0;
             int grupsViatgeActual = 0;
             Grupo anterior = null;
-            
-            /**PER CADA GRUP */
+
+            /**
+             * PER CADA GRUP
+             */
             for (int i = 0; i < llista.size(); i++) {
                 Grupo g = grups.get(llista.get(i));
                 int numPersones = g.getNPersonas();
 
-                /**COMPROVEM SI RECOLLIR AQUEST GRUP EXCEDEIX LA CAPACITAT O EL LÍMIT DE 3 GRUPS */
+                /**
+                 * COMPROVEM SI RECOLLIR AQUEST GRUP EXCEDEIX LA CAPACITAT O EL
+                 * LÍMIT DE 3 GRUPS
+                 */
                 if (personesHeli + numPersones > CAPACITAT_MAX || grupsViatgeActual == MAX_GRUPS_PER_VIATGE) {
-                    /**TORNEM A LA BASE */
+                    /**
+                     * TORNEM A LA BASE
+                     */
                     tempsTotal += distanciaCentreGrup(c, anterior) * (60.0 / 100.0);
-                    tempsTotal += 10; /**TEMPS DE DESCANS */
-                    
-                    /**REINICIEM VALORS PEL SEGÜENT VIATGE */
+                    tempsTotal += 10;
+                    /**
+                     * TEMPS DE DESCANS
+                     */
+
+                    /**
+                     * REINICIEM VALORS PEL SEGÜENT VIATGE
+                     */
                     personesHeli = 0;
-                    grupsViatgeActual = 0; 
+                    grupsViatgeActual = 0;
                     anterior = null;
                 }
 
-                /**ANEM A BUSCAR AL GRUP */
-                if (anterior == null) tempsTotal += distanciaCentreGrup(c, g) * (60.0 / 100.0);
-                else tempsTotal += distanciaGrupGrup(anterior, g) * (60.0 / 100.0);
+                /**
+                 * ANEM A BUSCAR AL GRUP
+                 */
+                if (anterior == null) {
+                    tempsTotal += distanciaCentreGrup(c, g) * (60.0 / 100.0); 
+                }else {
+                    tempsTotal += distanciaGrupGrup(anterior, g) * (60.0 / 100.0);
+                }
 
-                /**TEMPS DE RESCAT */
+                /**
+                 * TEMPS DE RESCAT
+                 */
                 int prio = g.getPrioridad();
-                if (prio == 1) tempsTotal += numPersones * 2; 
-                else tempsTotal += numPersones;
+                if (prio == 1) {
+                    tempsTotal += numPersones * 2; 
+                }else {
+                    tempsTotal += numPersones;
+                }
 
                 personesHeli += numPersones;
-                grupsViatgeActual++; 
+                grupsViatgeActual++;
                 anterior = g;
             }
-            
-            /**SI HEM ACABAT I TENIEM UN VIATGE A MITGES */
-            if (anterior != null) tempsTotal += distanciaCentreGrup(c, anterior) * (60.0 / 100.0);
+
+            /**
+             * SI HEM ACABAT I TENIEM UN VIATGE A MITGES
+             */
+            if (anterior != null) {
+                tempsTotal += distanciaCentreGrup(c, anterior) * (60.0 / 100.0);
+            }
         }
 
         return tempsTotal;

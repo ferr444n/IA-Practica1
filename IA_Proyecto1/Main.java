@@ -10,9 +10,9 @@ public class Main {
 
     public static void main(String[] args) throws Exception {
         
-        int numgrupos = 200;
+        int numgrupos = 100;
         int numCentres = 5;
-        int numHelicopters = 1; 
+        int numHelicopters = 6; 
 
         for(int seed = 1; seed <= 10; seed++){;
             System.out.println("Llavor utilitzada: " + seed);
