@@ -1,0 +1,50 @@
+Llavor utilitzada: 1
+Temps INICIAL: 3109.521074330354
+Temps FINAL: 2735.5251009787935
+Temps d'execució del Simulated Annealing: 105 ms
+
+Llavor utilitzada: 2
+Temps INICIAL: 3326.18921509536
+Temps FINAL: 2866.3735756260667
+Temps d'execució del Simulated Annealing: 77 ms
+
+Llavor utilitzada: 3
+Temps INICIAL: 3468.5995479068265
+Temps FINAL: 3035.3385853501695
+Temps d'execució del Simulated Annealing: 44 ms
+
+Llavor utilitzada: 4
+Temps INICIAL: 3319.1843118447423
+Temps FINAL: 2814.2303110464827
+Temps d'execució del Simulated Annealing: 54 ms
+
+Llavor utilitzada: 5
+Temps INICIAL: 2855.725598670989
+Temps FINAL: 2545.0751331951087
+Temps d'execució del Simulated Annealing: 56 ms
+
+Llavor utilitzada: 6
+Temps INICIAL: 2802.6011547905646
+Temps FINAL: 2461.9082271300176
+Temps d'execució del Simulated Annealing: 47 ms
+
+Llavor utilitzada: 7
+Temps INICIAL: 3135.3571996118044
+Temps FINAL: 2575.755689821835
+Temps d'execució del Simulated Annealing: 38 ms
+
+Llavor utilitzada: 8
+Temps INICIAL: 3035.23415090874
+Temps FINAL: 2626.490732636528
+Temps d'execució del Simulated Annealing: 48 ms
+
+Llavor utilitzada: 9
+Temps INICIAL: 2817.6358706944275
+Temps FINAL: 2389.651601767955
+Temps d'execució del Simulated Annealing: 40 ms
+
+Llavor utilitzada: 10
+Temps INICIAL: 2712.0665935263705
+Temps FINAL: 2322.733924118071
+Temps d'execució del Simulated Annealing: 51 ms
+

@@ -9,18 +9,18 @@ import java.util.Random;
 public class Main {
 
     public static void main(String[] args) throws Exception {
-
+        
         int numgrupos = 100;
         int numCentres = 5;
         int numHelicopters = 1; 
 
-        for(int seed = 1; seed <= 50; seed++){;
+        for(int seed = 1; seed <= 10; seed++){;
             System.out.println("Llavor utilitzada: " + seed);
 
             Grupos grupos = new Grupos(numgrupos, seed);
             Centros centres = new Centros(numCentres, numHelicopters, seed);
             
-            RescueStates estatInicial = Generator4.generate(grupos, centres);
+            RescueStates estatInicial = Generator2.generate(grupos, centres);
     
             System.out.println("Temps INICIAL: " + estatInicial.toString());
 
@@ -32,8 +32,12 @@ public class Main {
                     new IsGoalTest(),
                     new Heuristic1()
             );
-            
-            //Search search = new SimulatedAnnealingSearch(100000, 100, 10, 0.005);
+            int steps = 100000;
+            int stiter = 1000;
+            int k = 1;
+            double lambda = 0.001;
+
+            //Search search = new SimulatedAnnealingSearch(steps, stiter, k, lambda);
             Search search = new HillClimbingSearch();
             
             /**SERVEIX PER MESURAR EL TEMPS D'EXECUCIO DE L'ALGORISME*/
@@ -47,6 +51,7 @@ public class Main {
             
             System.out.println("Temps FINAL: " + resultado.toString());
             System.out.println("Temps d'execució del Hill Climbing: " + tempsTrigat + " ms\n");
+            //System.out.println("Temps d'execució del Simulated Annealing: " + tempsTrigat + " ms\n");
         }       
     }
 }
