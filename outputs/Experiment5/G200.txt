@@ -1,0 +1,12 @@
+Llavor utilitzada: 1
+Temps INICIAL: 5998.085048516008
+Temps FINAL: 4848.451324132465
+Temps d'execució del Hill Climbing: 15184 ms
+
+Llavor utilitzada: 2
+Temps INICIAL: 6428.789709008751
+Temps FINAL: 5296.697478706131
+Temps d'execució del Hill Climbing: 10529 ms
+
+Llavor utilitzada: 3
+Temps INICIAL: 6536.492033599941

@@ -10,7 +10,7 @@ public class Main {
 
     public static void main(String[] args) throws Exception {
         
-        int numgrupos = 100;
+        int numgrupos = 200;
         int numCentres = 5;
         int numHelicopters = 1; 
 
