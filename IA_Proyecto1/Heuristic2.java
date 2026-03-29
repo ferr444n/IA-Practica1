@@ -88,7 +88,7 @@ public class Heuristic2 implements HeuristicFunction {
             tempsTotalPrio1 += tempsHeliPrio1;
         }       
 
-        return tempsTotalMisio + 2 * tempsTotalPrio1;
+        return tempsTotalMisio + 100 * tempsTotalPrio1;
     }
 
     private double distanciaCentreGrup(Centro c, Grupo g) {

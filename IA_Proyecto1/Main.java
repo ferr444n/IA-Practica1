@@ -12,7 +12,7 @@ public class Main {
         
         int numgrupos = 100;
         int numCentres = 5;
-        int numHelicopters = 6; 
+        int numHelicopters = 1; 
 
         for(int seed = 1; seed <= 10; seed++){;
             System.out.println("Llavor utilitzada: " + seed);
@@ -30,7 +30,7 @@ public class Main {
                     new SuccessorHC(),
                     //new SuccessorSA(),
                     new IsGoalTest(),
-                    new Heuristic1()
+                    new Heuristic2()
             );
             int steps = 100000;
             int stiter = 1000;
